@@ -8,6 +8,6 @@ import java.util.List;
 //Service for handling all user related actions
 public interface UserService {
 
-    public abstract void createUser(final ProTipUser proTipUser);
+    public abstract void createUser(final ProTipUser proTipUser, final String password);
     public abstract List<ProTipUser> getUsers();
 }

@@ -1,6 +1,6 @@
 package com.protip.proTipServices.api;
 
-import com.protip.proTipServices.model.ProTipUser;
+import com.protip.proTipServices.model.Register;
 import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ public class userController {
     }
 
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> postUser(@RequestBody ProTipUser proTipUser) {
-        userService.createUser(proTipUser);
+    public ResponseEntity<?> postUser(@RequestBody Register register) {
+        userService.createUser(register.getProTipUser(), register.getPassword());
 
         return new ResponseEntity<>("Created", HttpStatus.CREATED);
     }

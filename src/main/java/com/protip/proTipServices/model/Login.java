@@ -1,6 +1,15 @@
 package com.protip.proTipServices.model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.GenerationType;
+import javax.persistence.OneToOne;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -10,16 +19,16 @@ public class Login implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "idLogin")
     private UUID idLogin;
-
+    @NotNull
     @Column(name = "username")
     private String username;
-
+    @NotNull
     @Column(name = "password")
     private String password;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_user", nullable = false)
     private ProTipUser user;
 
     public Login() {
