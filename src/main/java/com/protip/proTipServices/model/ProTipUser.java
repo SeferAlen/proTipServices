@@ -28,7 +28,7 @@ public class ProTipUser implements Serializable {
     @Column(name = "lastName")
     private String lastName;
     @NotNull
-    @Email
+    @Email(message = "Email not valid")
     @Column(name = "email")
     private String email;
     @Column(name = "dateOfBirth")

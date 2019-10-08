@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.OneToOne;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class Login implements Serializable {
     @Column(name = "password")
     private String password;
     @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @Valid
     @JoinColumn(name = "id_user", nullable = false)
     private ProTipUser user;
 

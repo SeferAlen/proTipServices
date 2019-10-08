@@ -1,21 +1,15 @@
 package com.protip.proTipServices.api;
 
+import com.protip.proTipServices.model.Login;
+import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Register;
-import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeParseException;
-import java.util.UUID;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -30,7 +24,7 @@ public class userController {
     }
 
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> postUser(@RequestBody Register register) {
+    public ResponseEntity<?> postUser(@Valid @RequestBody Register register) {
         userService.createUser(register.getProTipUser(), register.getPassword());
 
         return new ResponseEntity<>("Created", HttpStatus.CREATED);
