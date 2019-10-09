@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface LoginRepository extends JpaRepository<Login, UUID> {
 
-    Login findByUsername(final String username);
+    public abstract Login findByUsername(final String username);
 }
