@@ -16,13 +16,15 @@ public class Role implements Serializable {
     private UUID idRole;
     @NotNull
     @Column(name = "name")
-    private final String name;
+    private String name;
     @ManyToMany
     @JoinTable(
             name = "login_role",
             joinColumns = @JoinColumn(name = "idLogin"),
             inverseJoinColumns = @JoinColumn(name = "idRole"))
     private Set<Login> loginAccounts;
+
+    public Role() {}
 
     public Role(@NotNull String name) {
         this.name = name;

@@ -2,6 +2,9 @@ package com.protip.proTipServices.exceptions;
 
 import java.util.Date;
 
+/**
+ * Class for containing error's in customized exceptions
+ */
 public class ErrorDetails {
 
     private Date timestamp;

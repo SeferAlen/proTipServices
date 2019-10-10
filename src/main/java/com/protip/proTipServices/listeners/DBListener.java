@@ -5,36 +5,41 @@ import com.protip.proTipServices.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Logger;
 
+/**
+ * Listener for database related events
+ */
+@Component
 public class DBListener {
 
     @Autowired
-    Logger logger;
-    @Autowired
     RoleRepository roleRepository;
 
+    /**
+     * Db seeder
+     *
+     * @param event for listener
+     */
     @EventListener
     public void dbSeeder(ContextRefreshedEvent event) {
         seedRoleTable();
     }
 
+    /**
+     * Method for seeding database table at application start
+     */
     private void seedRoleTable() {
 
         final List<Role> roles = roleRepository.findAll();
 
         if(roles == null || roles.size() <= 0) {
-            roles.add(new Role("Admin"));
-            roles.add(new Role("User"));
-
-            logger.info("Users Seeded");
+            roleRepository.save(new Role("Admin"));
+            roleRepository.save(new Role("User"));
 
         } else {
-            logger.info("Users Seeding Not Required");
-
         }
     }
 }
