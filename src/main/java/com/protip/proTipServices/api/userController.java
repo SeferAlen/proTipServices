@@ -1,7 +1,5 @@
 package com.protip.proTipServices.api;
 
-import com.protip.proTipServices.model.Login;
-import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Register;
 import com.protip.proTipServices.service.UserService;
 import com.protip.proTipServices.utility.UserCreateStatus;
@@ -26,7 +24,7 @@ public class userController {
 
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> postUser(@Valid @RequestBody Register register) {
-        if(userService.createUser(register.getProTipUser(), register.getPassword()) == UserCreateStatus.ALREADY_EXIST) {
+        if (userService.createUser(register.getProTipUser(), register.getPassword()) == UserCreateStatus.ALREADY_EXIST) {
             return new ResponseEntity<>("User email already exist", HttpStatus.BAD_REQUEST);
         } else if (userService.createUser(register.getProTipUser(), register.getPassword()) == UserCreateStatus.CREATED) {
             return new ResponseEntity<>("Created", HttpStatus.CREATED);

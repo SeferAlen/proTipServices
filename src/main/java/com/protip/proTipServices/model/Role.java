@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Class for defining user roles in application
+ */
 @Entity
 @Table(name = "role")
 public class Role implements Serializable {
@@ -24,16 +27,34 @@ public class Role implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "idRole"))
     private Set<Login> loginAccounts;
 
+    /**
+     * Instantiates a new Role.
+     */
     public Role() {}
 
+    /**
+     * Instantiates a new Role.
+     *
+     * @param name the name
+     */
     public Role(@NotNull String name) {
         this.name = name;
     }
 
+    /**
+     * Gets id role.
+     *
+     * @return the id role
+     */
     public UUID getIdRole() {
         return idRole;
     }
 
+    /**
+     * Gets name.
+     *
+     * @return the name
+     */
     public String getName() {
         return name;
     }

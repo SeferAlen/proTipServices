@@ -21,7 +21,7 @@ public class DBListener {
     /**
      * Db seeder
      *
-     * @param event for listener
+     * @param event {@link ContextRefreshedEvent} event which occurred
      */
     @EventListener
     public void dbSeeder(ContextRefreshedEvent event) {

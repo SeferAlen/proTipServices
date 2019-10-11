@@ -28,9 +28,9 @@ public class UserServiceImpl implements UserService {
     /**
      * Db seeder.
      *
-     * @param proTipUser for register
-     * @param password of user
-     * @return UserCreateStatus representing status of user creating process
+     * @param proTipUser {@link ProTipUser} user for register
+     * @param password {@link String} user password
+     * @return {@link UserCreateStatus} representing status of user creating process
      */
     public UserCreateStatus createUser(final ProTipUser proTipUser, final String password) {
         Objects.requireNonNull(proTipUser, "User cannot be null");
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Method for getting all users
      *
-     * @return List<ProTipUser> list of all users
+     * @return {@link List<ProTipUser>} list of all users
      */
     public List<ProTipUser> getUsers() {
         return userRepository.findAll();
@@ -60,8 +60,8 @@ public class UserServiceImpl implements UserService {
     /**
      * Method for finding single user by username
      *
-     * @param username for register
-     * @return Login representing login of found user
+     * @param username {@link String} for register
+     * @return {@link Login} representing login of found user
      */
     public Login findByUsername(final String username) {
         return loginRepository.findByUsername(username);

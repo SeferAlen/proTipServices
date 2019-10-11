@@ -7,6 +7,9 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Class for user login
+ */
 @Entity
 @Table(name = "login")
 public class Login implements Serializable {
@@ -28,39 +31,84 @@ public class Login implements Serializable {
     @ManyToMany(mappedBy = "loginAccounts")
     private Set<Role> roles;
 
+    /**
+     * Instantiates a new Login.
+     */
     public Login() {
     }
 
+    /**
+     * Instantiates a new Login.
+     *
+     * @param username the username
+     * @param password the password
+     * @param user     the user
+     */
     public Login(String username, String password, ProTipUser user) {
         this.username = username;
         this.password = password;
         this.user = user;
     }
 
+    /**
+     * Gets id login.
+     *
+     * @return the id login
+     */
     public UUID getIdLogin() {
         return idLogin;
     }
 
+    /**
+     * Gets username.
+     *
+     * @return the username
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Sets username.
+     *
+     * @param username the username
+     */
     public void setUsername(String username) {
         this.username = username;
     }
 
+    /**
+     * Gets password.
+     *
+     * @return the password
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Sets password.
+     *
+     * @param password the password
+     */
     public void setPassword(String password) {
         this.password = password;
     }
 
+    /**
+     * Gets user.
+     *
+     * @return the user
+     */
     public ProTipUser getUser() {
         return user;
     }
 
+    /**
+     * Sets user.
+     *
+     * @param user the user
+     */
     public void setUser(ProTipUser user) {
         this.user = user;
     }
