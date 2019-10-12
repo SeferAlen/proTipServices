@@ -28,8 +28,9 @@ public class Login implements Serializable {
     @Valid
     @JoinColumn(name = "id_user", nullable = false)
     private ProTipUser user;
-    @ManyToMany(mappedBy = "loginAccounts")
-    private Set<Role> roles;
+    @ManyToOne
+    @JoinColumn
+    private Role role;
 
     /**
      * Instantiates a new Login.
@@ -44,10 +45,14 @@ public class Login implements Serializable {
      * @param password the password
      * @param user     the user
      */
-    public Login(String username, String password, ProTipUser user) {
+    public Login(final String username,
+                 final String password,
+                 final ProTipUser user,
+                 final Role role) {
         this.username = username;
         this.password = password;
         this.user = user;
+        this.role = role;
     }
 
     /**
@@ -111,5 +116,14 @@ public class Login implements Serializable {
      */
     public void setUser(ProTipUser user) {
         this.user = user;
+    }
+
+    /**
+     * Gets role.
+     *
+     * @return the role
+     */
+    public Role getRole() {
+        return role;
     }
 }

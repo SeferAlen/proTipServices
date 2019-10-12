@@ -20,12 +20,8 @@ public class Role implements Serializable {
     @NotNull
     @Column(name = "name")
     private String name;
-    @ManyToMany
-    @JoinTable(
-            name = "login_role",
-            joinColumns = @JoinColumn(name = "idLogin"),
-            inverseJoinColumns = @JoinColumn(name = "idRole"))
-    private Set<Login> loginAccounts;
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+    private Set<Login> logins;
 
     /**
      * Instantiates a new Role.

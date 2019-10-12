@@ -24,9 +24,10 @@ public class userController {
 
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> postUser(@Valid @RequestBody Register register) {
-        if (userService.createUser(register.getProTipUser(), register.getPassword()) == UserCreateStatus.ALREADY_EXIST) {
+        final UserCreateStatus userCreateStatus = userService.createUser(register.getProTipUser(), register.getPassword());
+        if (userCreateStatus == UserCreateStatus.ALREADY_EXIST) {
             return new ResponseEntity<>("User email already exist", HttpStatus.BAD_REQUEST);
-        } else if (userService.createUser(register.getProTipUser(), register.getPassword()) == UserCreateStatus.CREATED) {
+        } else if (userCreateStatus == UserCreateStatus.CREATED) {
             return new ResponseEntity<>("Created", HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>("Error while creating new user", HttpStatus.BAD_REQUEST);

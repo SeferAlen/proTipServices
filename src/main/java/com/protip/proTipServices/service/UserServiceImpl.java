@@ -2,7 +2,9 @@ package com.protip.proTipServices.service;
 
 import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.model.ProTipUser;
+import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.LoginRepository;
+import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.utility.UserCreateStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     LoginRepository loginRepository;
     @Autowired
+    RoleRepository roleRepository;
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     /**
@@ -42,7 +46,8 @@ public class UserServiceImpl implements UserService {
                 return UserCreateStatus.ALREADY_EXIST;
             } else {
                 userRepository.save(proTipUser);
-                Login login = new Login(proTipUser.getEmail(), passwordEncoder.encode(password), proTipUser);
+                final Role role = roleRepository.findByName("User");
+                Login login = new Login(proTipUser.getEmail(), passwordEncoder.encode(password), proTipUser, role);
                 loginRepository.save(login);
                 return UserCreateStatus.CREATED;
             }
