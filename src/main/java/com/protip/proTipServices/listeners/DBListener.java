@@ -1,5 +1,6 @@
 package com.protip.proTipServices.listeners;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Role;
@@ -10,8 +11,10 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +30,8 @@ public class DBListener {
     LoginRepository loginRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     /**
      * Db seeder
@@ -54,13 +59,21 @@ public class DBListener {
         }
     }
 
+    /**
+     * Method for creating default user at application start
+     */
     private void createDefaultAdminUser() {
+        try {
+            final Date date = new SimpleDateFormat("yyyy-MM-dd").parse("1990-03-22");
 
-        final ProTipUser defaultUser = new ProTipUser("Alen","Sefer","sefer.alen@yahoo.com",new Date("1990-03-22"));
-        final Role defaultUserRole = roleRepository.findByName("Admin");
-        final Login defaultUserLogin = new Login(defaultUser.getEmail(), "proTipServicesSeferAlen", defaultUser, defaultUserRole);
+            final ProTipUser defaultUser = new ProTipUser("Alen","Sefer","sefer.alen@yahoo.com", date);
+            final Role defaultUserRole = roleRepository.findByName("Admin");
+            final Login defaultUserLogin = new Login(defaultUser.getEmail(), passwordEncoder.encode("proTipServicesSeferAlen"), defaultUser, defaultUserRole);
 
-        userRepository.save(defaultUser);
-        loginRepository.save(defaultUserLogin);
+            userRepository.save(defaultUser);
+            loginRepository.save(defaultUserLogin);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while creating default user in database");
+        }
     }
 }

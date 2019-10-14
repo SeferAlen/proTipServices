@@ -6,6 +6,7 @@ import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.LoginRepository;
 import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
+import com.protip.proTipServices.utility.JwtTokenUtil;
 import com.protip.proTipServices.utility.UserCreateStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
