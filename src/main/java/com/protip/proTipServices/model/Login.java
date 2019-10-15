@@ -24,6 +24,8 @@ public class Login implements Serializable {
     @NotNull
     @Column(name = "password")
     private String password;
+    @Column(name = "token")
+    private String token;
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @Valid
     @JoinColumn(name = "id_user", nullable = false)
@@ -98,6 +100,24 @@ public class Login implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Gets token.
+     *
+     * @return the token
+     */
+    public String getToken() {
+        return token;
+    }
+
+    /**
+     * Sets token.
+     *
+     * @param token the token
+     */
+    public void setToken(String token) {
+        this.token = token;
     }
 
     /**

@@ -1,13 +1,12 @@
 package com.protip.proTipServices.listeners;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.LoginRepository;
 import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
-import org.apache.catalina.User;
+import com.protip.proTipServices.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -27,11 +26,9 @@ public class DBListener {
     @Autowired
     RoleRepository roleRepository;
     @Autowired
-    LoginRepository loginRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    UserService userService;
 
     /**
      * Db seeder
@@ -68,11 +65,9 @@ public class DBListener {
 
             final ProTipUser defaultUser = new ProTipUser("Alen","Sefer","sefer.alen@yahoo.com", date);
             final Role defaultUserRole = roleRepository.findByName("Admin");
-            final Login defaultUserLogin = new Login(defaultUser.getEmail(), passwordEncoder.encode("proTipServicesSeferAlen"), defaultUser, defaultUserRole);
 
-            userRepository.save(defaultUser);
-            loginRepository.save(defaultUserLogin);
-        } catch (Exception e) {
+            userService.createUser(defaultUser, "proTipServicesAlenSefer", defaultUserRole);
+        } catch (final Exception e) {
             throw new RuntimeException("Error while creating default user in database");
         }
     }

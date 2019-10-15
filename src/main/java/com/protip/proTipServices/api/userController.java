@@ -1,6 +1,7 @@
 package com.protip.proTipServices.api;
 
 import com.protip.proTipServices.model.Register;
+import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.service.UserService;
 import com.protip.proTipServices.utility.UserCreateStatus;
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ public class userController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    RoleRepository roleRepository;
 
     @GetMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> getUsers() {
@@ -31,7 +34,9 @@ public class userController {
 
         logger.info("User registering : " + register.getProTipUser().getFirstName() + " " + register.getProTipUser().getLastName());
 
-        final UserCreateStatus userCreateStatus = userService.createUser(register.getProTipUser(), register.getPassword());
+        final UserCreateStatus userCreateStatus = userService.createUser(register.getProTipUser(),
+                                                                         register.getPassword(),
+                                                                         roleRepository.findByName("User"));
         if (userCreateStatus == UserCreateStatus.ALREADY_EXIST) {
             return new ResponseEntity<>("User email already exist", HttpStatus.BAD_REQUEST);
         } else if (userCreateStatus == UserCreateStatus.CREATED) {

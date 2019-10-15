@@ -8,6 +8,7 @@ import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.utility.JwtTokenUtil;
 import com.protip.proTipServices.utility.UserCreateStatus;
+import com.protip.proTipServices.utility.UserTokenStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
      * @param password {@link String} user password
      * @return {@link UserCreateStatus} representing status of user creating process
      */
-    public UserCreateStatus createUser(final ProTipUser proTipUser, final String password) {
+    public UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role) {
         Objects.requireNonNull(proTipUser, "User cannot be null");
         Objects.requireNonNull(password, "Password cannot be null");
 
@@ -47,7 +48,6 @@ public class UserServiceImpl implements UserService {
                 return UserCreateStatus.ALREADY_EXIST;
             } else {
                 userRepository.save(proTipUser);
-                final Role role = roleRepository.findByName("User");
                 Login login = new Login(proTipUser.getEmail(), passwordEncoder.encode(password), proTipUser, role);
                 loginRepository.save(login);
                 return UserCreateStatus.CREATED;
@@ -71,5 +71,15 @@ public class UserServiceImpl implements UserService {
      */
     public Login findByUsername(final String username) {
         return loginRepository.findByUsername(username);
+    }
+
+    public UserTokenStatus setToken(final String token, final String username) {
+        Objects.requireNonNull(token, "Token cannot be null");
+        Objects.requireNonNull(username, "Username login cannot be null");
+
+        Login login = loginRepository.findByUsername(username);
+        login.setToken(token);
+        loginRepository.save(login);
+        return UserTokenStatus.GENERATED;
     }
 }
