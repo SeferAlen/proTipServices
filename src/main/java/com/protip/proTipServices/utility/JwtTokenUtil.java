@@ -1,11 +1,10 @@
 package com.protip.proTipServices.utility;
 
 import com.protip.proTipServices.model.Login;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,21 +22,25 @@ public class JwtTokenUtil implements Serializable {
     /**
      * Method for getting username from jwt
      */
-    public static String getUsernameFromToken(String token) {
+    public static String getUsernameFromToken(final String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
     /**
      * Method for getting expiration date from jwt
      */
-    public static Date getExpirationDateFromToken(String token) {
+    public static Date getExpirationDateFromToken(final String token) {
         return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    public static String getPayload(final String token) {
+        return Jwts.parser().setSigningKey(secret).parse(token).getBody().toString();
     }
 
     /**
      * Method for getting claim from jwt
      */
-    public static <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+    public static <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
@@ -45,14 +48,22 @@ public class JwtTokenUtil implements Serializable {
     /**
      * Method for getting all claims from jwt
      */
-    private static Claims getAllClaimsFromToken(String token) {
+    private static Claims getAllClaimsFromToken(final String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+    public static Claims decodeJWT(final String jwt) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
+                .parseClaimsJws(jwt).getBody();
+
+        return claims;
     }
 
     /**
      * Method for check jwt expiration
      */
-    private static Boolean isTokenExpired(String token) {
+    private static Boolean isTokenExpired(final String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
@@ -60,15 +71,16 @@ public class JwtTokenUtil implements Serializable {
     /**
      * Method for generating jwt
      */
-    public static String generateToken(Login userLogin) {
+    public static String generateToken(final Login userLogin) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("Role", userLogin.getRole().getName());
         return doGenerateToken(claims, userLogin.getUsername());
     }
 
     /**
      * Method for generating jwt
      */
-    private static String doGenerateToken(Map<String, Object> claims, String subject) {
+    private static String doGenerateToken(final Map<String, Object> claims, final String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
             .signWith(SignatureAlgorithm.HS512, secret).compact();
@@ -77,7 +89,7 @@ public class JwtTokenUtil implements Serializable {
     /**
      * Method for validating jwt
      */
-    public static Boolean validateToken(String token, Login userLogin) {
+    public static Boolean validateToken(final String token, final Login userLogin) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userLogin.getUsername()) && !isTokenExpired(token));
     }

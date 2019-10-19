@@ -12,8 +12,8 @@ import java.util.List;
 //Service for handling all user related actions
 public interface UserService {
 
-    public abstract UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role);
-    public abstract List<ProTipUser> getUsers();
-    public abstract Login findByUsername(final String username);
-    public abstract UserTokenStatus setToken(final String token, final String  username);
+    UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role);
+    List<ProTipUser> getUsers();
+    Login findByUsername(final String username);
+    UserTokenStatus setToken(final String token, final String  username);
 }

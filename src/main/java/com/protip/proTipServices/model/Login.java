@@ -1,11 +1,28 @@
 package com.protip.proTipServices.model;
 
-import javax.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Class for user login
@@ -46,6 +63,7 @@ public class Login implements Serializable {
      * @param username the username
      * @param password the password
      * @param user     the user
+     * @param role     the role
      */
     public Login(final String username,
                  final String password,
@@ -145,5 +163,14 @@ public class Login implements Serializable {
      */
     public Role getRole() {
         return role;
+    }
+
+    /**
+     * Sets role.
+     *
+     * @param role the role
+     */
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

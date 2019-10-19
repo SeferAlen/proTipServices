@@ -1,11 +1,8 @@
 package com.protip.proTipServices.listeners;
 
-import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Role;
-import com.protip.proTipServices.repository.LoginRepository;
 import com.protip.proTipServices.repository.RoleRepository;
-import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -49,10 +46,11 @@ public class DBListener {
         final List<Role> roles = roleRepository.findAll();
 
         if(roles == null || roles.size() <= 0) {
-            roleRepository.save(new Role("Admin"));
-            roleRepository.save(new Role("User"));
+            roleRepository.save(new Role("ADMIN"));
+            roleRepository.save(new Role("USER"));
 
         } else {
+            // Nothing do to here
         }
     }
 

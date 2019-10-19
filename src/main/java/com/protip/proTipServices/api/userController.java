@@ -9,10 +9,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.validation.Valid;
 
+/**
+ * REST controller for accessing users in database
+ */
 @RestController
 @RequestMapping("/users")
 public class userController {
@@ -24,19 +31,30 @@ public class userController {
     @Autowired
     RoleRepository roleRepository;
 
+    /**
+     * Gets all users from database.
+     *
+     * @return the users
+     */
     @GetMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> getUsers() {
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
+    /**
+     * Post new user
+     *
+     * @param register the register
+     * @return the response entity with body with message status and Http status
+     */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> postUser(@Valid @RequestBody Register register) {
+    public ResponseEntity<?> postUser(@Valid @RequestBody final Register register) {
 
         logger.info("User registering : " + register.getProTipUser().getFirstName() + " " + register.getProTipUser().getLastName());
 
         final UserCreateStatus userCreateStatus = userService.createUser(register.getProTipUser(),
                                                                          register.getPassword(),
-                                                                         roleRepository.findByName("User"));
+                                                                         roleRepository.findByName("USER"));
         if (userCreateStatus == UserCreateStatus.ALREADY_EXIST) {
             return new ResponseEntity<>("User email already exist", HttpStatus.BAD_REQUEST);
         } else if (userCreateStatus == UserCreateStatus.CREATED) {
