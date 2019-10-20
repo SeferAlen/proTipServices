@@ -6,9 +6,7 @@ import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.LoginRepository;
 import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
-import com.protip.proTipServices.utility.JwtTokenUtil;
 import com.protip.proTipServices.utility.UserCreateStatus;
-import com.protip.proTipServices.utility.UserTokenStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,8 +25,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     LoginRepository loginRepository;
     @Autowired
-    RoleRepository roleRepository;
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     /**
@@ -41,17 +37,18 @@ public class UserServiceImpl implements UserService {
     public UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role) {
         Objects.requireNonNull(proTipUser, "User cannot be null");
         Objects.requireNonNull(password, "Password cannot be null");
+        Objects.requireNonNull(role, "Role cannot be null");
 
-            if(userRepository.findAll()
-                    .stream()
-                    .anyMatch(user -> user.getEmail().equals(proTipUser.getEmail()))) {
-                return UserCreateStatus.ALREADY_EXIST;
-            } else {
-                userRepository.save(proTipUser);
-                Login login = new Login(proTipUser.getEmail(), passwordEncoder.encode(password), proTipUser, role);
-                loginRepository.save(login);
-                return UserCreateStatus.CREATED;
-            }
+        if(userRepository.findAll()
+                .stream()
+                .anyMatch(user -> user.getEmail().equals(proTipUser.getEmail()))) {
+            return UserCreateStatus.ALREADY_EXIST;
+        } else {
+            userRepository.save(proTipUser);
+            final Login login = new Login(proTipUser.getEmail(), passwordEncoder.encode(password), proTipUser, role);
+            loginRepository.save(login);
+            return UserCreateStatus.CREATED;
+        }
     }
 
     /**
@@ -71,15 +68,5 @@ public class UserServiceImpl implements UserService {
      */
     public Login findByUsername(final String username) {
         return loginRepository.findByUsername(username);
-    }
-
-    public UserTokenStatus setToken(final String token, final String username) {
-        Objects.requireNonNull(token, "Token cannot be null");
-        Objects.requireNonNull(username, "Username login cannot be null");
-
-        Login login = loginRepository.findByUsername(username);
-        login.setToken(token);
-        loginRepository.save(login);
-        return UserTokenStatus.GENERATED;
     }
 }

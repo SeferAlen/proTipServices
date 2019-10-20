@@ -15,5 +15,4 @@ public interface UserService {
     UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role);
     List<ProTipUser> getUsers();
     Login findByUsername(final String username);
-    UserTokenStatus setToken(final String token, final String  username);
 }

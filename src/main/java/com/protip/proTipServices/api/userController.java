@@ -1,7 +1,11 @@
 package com.protip.proTipServices.api;
 
+import com.protip.proTipServices.exceptions.GenericProTipServiceException;
+import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.model.Register;
+import com.protip.proTipServices.model.TokenSet;
 import com.protip.proTipServices.repository.RoleRepository;
+import com.protip.proTipServices.service.AuthorizationService;
 import com.protip.proTipServices.service.UserService;
 import com.protip.proTipServices.utility.UserCreateStatus;
 import org.slf4j.Logger;
@@ -30,21 +34,27 @@ public class userController {
     UserService userService;
     @Autowired
     RoleRepository roleRepository;
+    @Autowired
+    AuthorizationService authorizationService;
 
     /**
      * Gets all users from database.
      *
+     * @param tokenSet containing token
      * @return the users
      */
     @GetMapping(value = "", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> getUsers() {
+    public ResponseEntity<?> getUsers(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException, TokenExpiredException {
+
+        authorizationService.authorizeUser(tokenSet.getToken());
+
         return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
     /**
-     * Post new user
+     * Register new user
      *
-     * @param register the register
+     * @param register containing user info and password
      * @return the response entity with body with message status and Http status
      */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")

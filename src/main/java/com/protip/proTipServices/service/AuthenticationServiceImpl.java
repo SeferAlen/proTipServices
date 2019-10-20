@@ -1,6 +1,7 @@
 package com.protip.proTipServices.service;
 
-import com.protip.proTipServices.api.userController;
+import com.protip.proTipServices.exceptions.PasswordIncorrectException;
+import com.protip.proTipServices.exceptions.UserNotFoundException;
 import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.repository.LoginRepository;
 import com.protip.proTipServices.repository.RoleRepository;
@@ -20,19 +21,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     LoginRepository loginRepository;
     @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
     PasswordEncoder passwordEncoder;
 
-    public String loginAndGenerateToken(final Login login) {
-        logger.info("User logging : " + login.getUsername());
+    public String loginAndGenerateToken(final Login login) throws UserNotFoundException, PasswordIncorrectException {
+        logger.info("User logging : \nUsername: " + login.getUsername() + "\nPassword: " + login.getPassword());
 
-        boolean passwordCorrect = passwordEncoder.matches(login.getPassword(), loginRepository.findByUsername(login.getUsername()).getPassword());
-        logger.info("Password is : " + passwordCorrect);
+        final Login user = loginRepository.findByUsername(login.getUsername());
+        if(user == null) throw new UserNotFoundException("User " + login.getUsername() + " does not exist");
 
+        final boolean passwordCorrect = passwordEncoder.matches(login.getPassword(), loginRepository.findByUsername(login.getUsername()).getPassword());
+        if(!passwordCorrect) throw new PasswordIncorrectException("Password " + login.getPassword() + " is wrong");
         login.setRole(loginRepository.findByUsername(login.getUsername()).getRole());
+
         return JwtTokenUtil.generateToken(login);
     }
 }

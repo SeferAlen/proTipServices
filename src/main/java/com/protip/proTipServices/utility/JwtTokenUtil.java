@@ -1,7 +1,10 @@
 package com.protip.proTipServices.utility;
 
+import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.model.Login;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.xml.bind.DatatypeConverter;
@@ -12,12 +15,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class JwtTokenUtil implements Serializable {
-
     private static final long serialVersionUID = -2550185165626007488L;
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
     @Value("${jwt.secret}")
-    private static String secret = "proTipServicesSeferAlen";
+    private static String jwtSecret;
 
     /**
      * Method for getting username from jwt
@@ -34,7 +36,8 @@ public class JwtTokenUtil implements Serializable {
     }
 
     public static String getPayload(final String token) {
-        return Jwts.parser().setSigningKey(secret).parse(token).getBody().toString();
+
+        return Jwts.parser().setSigningKey(jwtSecret).parse(token).getBody().toString();
     }
 
     /**
@@ -48,13 +51,13 @@ public class JwtTokenUtil implements Serializable {
     /**
      * Method for getting all claims from jwt
      */
-    private static Claims getAllClaimsFromToken(final String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    public static Claims getAllClaimsFromToken(final String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
     }
 
     public static Claims decodeJWT(final String jwt) {
         Claims claims = Jwts.parser()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(secret))
+                .setSigningKey(DatatypeConverter.parseBase64Binary(jwtSecret))
                 .parseClaimsJws(jwt).getBody();
 
         return claims;
@@ -82,15 +85,15 @@ public class JwtTokenUtil implements Serializable {
      */
     private static String doGenerateToken(final Map<String, Object> claims, final String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-            .signWith(SignatureAlgorithm.HS512, secret).compact();
+            .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 50))
+            .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }	//validate token
 
     /**
      * Method for validating jwt
      */
-    public static Boolean validateToken(final String token, final Login userLogin) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userLogin.getUsername()) && !isTokenExpired(token));
+    public static void validateToken(final String token) throws TokenExpiredException {
+        if(isTokenExpired(token)) throw new TokenExpiredException("Token " + token + " is expired");
+        decodeJWT(token);
     }
 }

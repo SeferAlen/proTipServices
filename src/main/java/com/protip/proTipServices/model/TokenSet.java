@@ -6,17 +6,14 @@ package com.protip.proTipServices.model;
 public class TokenSet {
 
     private final String token;
-    private final String username;
 
     /**
      * Instantiates a new Token set.
      *
      * @param token    the token
-     * @param username the login
      */
-    public TokenSet(String token, String  username) {
+    public TokenSet(String token) {
         this.token = token;
-        this.username = username;
     }
 
     /**
@@ -26,14 +23,5 @@ public class TokenSet {
      */
     public String getToken() {
         return token;
-    }
-
-    /**
-     * Gets username.
-     *
-     * @return the username
-     */
-    public String getUsername() {
-        return username;
     }
 }

@@ -1,9 +1,5 @@
 package com.protip.proTipServices.model;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,12 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Class for user login
@@ -41,8 +32,6 @@ public class Login implements Serializable {
     @NotNull
     @Column(name = "password")
     private String password;
-    @Column(name = "token")
-    private String token;
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @Valid
     @JoinColumn(name = "id_user", nullable = false)
@@ -118,24 +107,6 @@ public class Login implements Serializable {
      */
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    /**
-     * Gets token.
-     *
-     * @return the token
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * Sets token.
-     *
-     * @param token the token
-     */
-    public void setToken(String token) {
-        this.token = token;
     }
 
     /**
