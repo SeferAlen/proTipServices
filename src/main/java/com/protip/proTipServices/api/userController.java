@@ -27,7 +27,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/users")
 public class userController {
-
     private final Logger logger = LoggerFactory.getLogger(userController.class);
 
     @Autowired
@@ -59,7 +58,6 @@ public class userController {
      */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> postUser(@Valid @RequestBody final Register register) {
-
         logger.info("User registering : " + register.getProTipUser().getFirstName() + " " + register.getProTipUser().getLastName());
 
         final UserCreateStatus userCreateStatus = userService.createUser(register.getProTipUser(),

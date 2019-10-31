@@ -74,6 +74,7 @@ public class testController {
      */
     @PostMapping(value = "sendMessage")
     public ResponseEntity<?> testAdminAuthorization(@RequestBody final Message message) {
+
         if(message.getSender().equals("Alen")) {
             rabbitTemplate.convertAndSend("proTipServicesQueueNotification", message.getMessage());
         } else {

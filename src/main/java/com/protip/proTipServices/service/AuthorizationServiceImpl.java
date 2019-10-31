@@ -41,6 +41,10 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
     }
 
+    public Role getRole(final String token) throws GenericProTipServiceException, TokenExpiredException {
+        return basicAuthorization(token);
+    }
+
     private Role basicAuthorization(final String token) throws GenericProTipServiceException, TokenExpiredException {
         JwtTokenUtil.validateToken(token);
 
