@@ -3,6 +3,7 @@ package com.protip.proTipServices.api;
 import com.protip.proTipServices.exceptions.PasswordIncorrectException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
 import com.protip.proTipServices.model.Login;
+import com.protip.proTipServices.model.TokenSet;
 import com.protip.proTipServices.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,6 @@ public class loginController {
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> login(@RequestBody final Login login) throws UserNotFoundException, PasswordIncorrectException {
 
-        return new ResponseEntity<>(authenticationService.loginAndGenerateToken(login), HttpStatus.OK);
+        return new ResponseEntity<>(new TokenSet(authenticationService.loginAndGenerateToken(login)), HttpStatus.OK);
     }
 }

@@ -149,7 +149,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     protected ResponseEntity<Object> handlePasswordIncorrectException(final PasswordIncorrectException ex) {
         Objects.requireNonNull(ex, "Exception must not be null");
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Password invalid", ex.getLocalizedMessage()),
+        return new ResponseEntity<>(new ErrorDetails(new Date(), "Wrong password", ex.getLocalizedMessage()),
                 HttpStatus.UNAUTHORIZED
         );
     }
