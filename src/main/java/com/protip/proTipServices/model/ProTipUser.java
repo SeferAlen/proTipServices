@@ -8,10 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
-import javax.validation.constraints.Email;
+import javax.persistence.OneToMany;
+import javax.persistence.CascadeType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Email;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -37,6 +40,8 @@ public class ProTipUser implements Serializable {
     @Column(name = "dateOfBirth")
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date dateOfBirth;
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    private Set<Message> message;
 
     /**
      * Instantiates a new Pro tip user.

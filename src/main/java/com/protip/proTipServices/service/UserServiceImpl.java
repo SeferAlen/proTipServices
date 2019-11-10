@@ -4,7 +4,6 @@ import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.LoginRepository;
-import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.utility.UserCreateStatus;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -27,7 +27,7 @@ public class Role implements Serializable {
     @Column(name = "name")
     private String name;
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private Set<Login> logins;
+    private Set<Login> login;
 
     /**
      * Instantiates a new Role.

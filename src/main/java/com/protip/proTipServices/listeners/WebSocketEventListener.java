@@ -31,10 +31,10 @@ public class WebSocketEventListener {
         final String username = (String) headerAccessor.getSessionAttributes().get("username");
 
         if(username != null) {
-            Message chatMessage = new Message();
-            chatMessage.setMessageType(MessageType.MESSAGE);
-            chatMessage.setSender(username);
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
+            //Message chatMessage = new Message();
+            //chatMessage.setMessageType(MessageType.MESSAGE);
+            //chatMessage.setSender(username);
+            //messagingTemplate.convertAndSend("/topic/public", chatMessage);
         }
     }
 }

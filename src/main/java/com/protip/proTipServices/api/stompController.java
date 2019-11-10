@@ -27,9 +27,9 @@ public class stompController {
     @MessageMapping("/chat.newUser")
     @SendTo("/topic/javainuse")
     public ResponseEntity<?> newUser(@Payload Message message, SimpMessageHeaderAccessor headerAccessor) {
-        message.setMessageType(MessageType.MESSAGE);
-        rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
-        headerAccessor.getSessionAttributes().put("username", message);
+        //message.setMessageType(MessageType.MESSAGE);
+        //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+        //headerAccessor.getSessionAttributes().put("username", message);
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

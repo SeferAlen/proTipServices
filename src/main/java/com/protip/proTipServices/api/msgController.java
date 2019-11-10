@@ -50,14 +50,14 @@ public class msgController {
         final String token = auth.substring(auth.indexOf(" "));
         final Role userRole = authorizationService.getRole(token);
 
-        if(userRole.getName().equals("ADMIN") && message.getMessageType() == MessageType.NOTIFICATION) {
-            logger.info("New notification : " + message.getMessage() + ", from " + message.getSender());
-        } else {
-            message.setMessageType(MessageType.MESSAGE);
-            template.convertAndSend("/topic/javainuse", message);
-            rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
-            logger.info("New message : " + message.getMessage() + ", from " + message.getSender());
-        }
+       // if(userRole.getName().equals("ADMIN") && message.getMessageType() == MessageType.NOTIFICATION) {
+       //     logger.info("New notification : " + message.getMessage() + ", from " + message.getSender());
+       // } else {
+       //     message.setMessageType(MessageType.MESSAGE);
+       //     template.convertAndSend("/topic/javainuse", message);
+       //     rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+       //     logger.info("New message : " + message.getMessage() + ", from " + message.getSender());
+       // }
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

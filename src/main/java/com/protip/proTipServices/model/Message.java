@@ -1,33 +1,86 @@
 package com.protip.proTipServices.model;
 
-import com.protip.proTipServices.utility.MessageType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
 
 /**
- * The type Message.
+ * Class for messages
  */
+@Entity
+@Table(name = "message")
 public class Message {
 
+    @GeneratedValue
+    @Id
+    @Column(name = "idMessage")
+    private UUID idMessage;
+    @NotNull
+    @ManyToOne
+    private ProTipUser sender;
+    @NotNull
+    @Column(name = "message", length = 500)
     private String message;
-    private String sender;
+    @NotNull
+    @ManyToOne
+    @JoinColumn
     private MessageType messageType;
 
     /**
      * Instantiates a new Message.
+     *
+     * @param idMessage   the id message
+     * @param sender      the sender
+     * @param message     the message
+     * @param messageType the message type
      */
-    public Message() {
+    public Message(UUID idMessage, @NotNull ProTipUser sender, @NotNull String message, @NotNull MessageType messageType) {
+        this.idMessage = idMessage;
+        this.sender = sender;
+        this.message = message;
+        this.messageType = messageType;
     }
 
     /**
-     * Instantiates a new Message.
+     * Gets id message.
      *
-     * @param message     the message
-     * @param sender      the sender
-     * @param messageType the message type
+     * @return the id message
      */
-    public Message(String message, String sender, MessageType messageType) {
-        this.message = message;
+    public UUID getIdMessage() {
+        return idMessage;
+    }
+
+    /**
+     * Sets id message.
+     *
+     * @param idMessage the id message
+     */
+    public void setIdMessage(UUID idMessage) {
+        this.idMessage = idMessage;
+    }
+
+    /**
+     * Gets sender.
+     *
+     * @return the sender
+     */
+    public ProTipUser getSender() {
+        return sender;
+    }
+
+    /**
+     * Sets sender.
+     *
+     * @param sender the sender
+     */
+    public void setSender(ProTipUser sender) {
         this.sender = sender;
-        this.messageType = messageType;
     }
 
     /**
@@ -46,24 +99,6 @@ public class Message {
      */
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    /**
-     * Gets sender.
-     *
-     * @return the sender
-     */
-    public String getSender() {
-        return sender;
-    }
-
-    /**
-     * Sets sender.
-     *
-     * @param sender the sender
-     */
-    public void setSender(String sender) {
-        this.sender = sender;
     }
 
     /**
