@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class loginController extends basicController {
 
     @Autowired
-    AuthenticationService authenticationService;
+    private AuthenticationService authenticationService;
 
     /**
      * Login endpoint for user login and token generation

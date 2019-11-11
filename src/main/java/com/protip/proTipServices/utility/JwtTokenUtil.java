@@ -30,7 +30,7 @@ public class JwtTokenUtil implements Serializable {
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final int TOKEN_EXPIRATION = 5000;
     private static final long serialVersionUID = -2550185165626007488L;
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+    private static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
     @Value("${jwt.secret}")
     private static String jwtSecret = "proTipServicesSeferAlen";
