@@ -30,8 +30,8 @@ import java.util.List;
 @SpringBootTest(classes = ProTipServicesApplication.class)
 public class UserServiceImplTest {
 
-    final ProTipUser proTipUser1 = new ProTipUser("Alen","Sefer", "alensefer1990@gmail.com", new Date());
-    final ProTipUser proTipUser2 = new ProTipUser("Pero","Peric", "peroperic@gmail.com", new Date());
+    final ProTipUser proTipUser1 = new ProTipUser("Alen","Sefer", "alensefer1990@gmail.com", new Date(), new Date());
+    final ProTipUser proTipUser2 = new ProTipUser("Pero","Peric", "peroperic@gmail.com", new Date(), new Date());
     final Login login1 = new Login(proTipUser1.getEmail(), "test", proTipUser1, new Role("test"));
     final List<ProTipUser> users = new LinkedList<ProTipUser>();
 
@@ -76,7 +76,7 @@ public class UserServiceImplTest {
     @Test
     public void testCreateUser() {
         Assert.assertEquals(UserCreateStatus.ALREADY_EXIST, userService.createUser(proTipUser1, "test", new Role("test")));
-        final ProTipUser testUser = new ProTipUser("Pajo", "Patak", "pajoPatak@gmail.com", new Date());
+        final ProTipUser testUser = new ProTipUser("Pajo", "Patak", "pajoPatak@gmail.com", new Date(), new Date());
 
         Assert.assertEquals(UserCreateStatus.CREATED, userService.createUser(testUser, "test", new Role("test")));
     }

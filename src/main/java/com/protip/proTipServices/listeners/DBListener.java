@@ -21,8 +21,8 @@ import java.util.List;
  */
 @Component
 public class DBListener {
-    private final String MESSAGE_TYPE_MESSAGE = com.protip.proTipServices.utility.MessageType.MESSAGE.toString();
-    private final String MESSAGE_TYPE_NOTIFICATION = com.protip.proTipServices.utility.MessageType.NOTIFICATION.toString();
+    private final String MESSAGE_TYPE_MESSAGE = "MESSAGE";
+    private final String MESSAGE_TYPE_NOTIFICATION = "NOTIFICATION";
     private final String ROLE_ADMIN = "ADMIN";
     private final String ROLE_USER = "USER";
     private final String DEFAULT_USER_FIRST_NAME = "Alen";
@@ -91,7 +91,7 @@ public class DBListener {
         try {
             final Date date = new SimpleDateFormat(DATE_PARSE_FORMAT).parse(DATE);
 
-            final ProTipUser defaultUser = new ProTipUser(DEFAULT_USER_FIRST_NAME,DEFAULT_USER_LAST_NAME,DEFAULT_USER_EMAIL, date);
+            final ProTipUser defaultUser = new ProTipUser(DEFAULT_USER_FIRST_NAME,DEFAULT_USER_LAST_NAME,DEFAULT_USER_EMAIL, date, new Date());
             final Role defaultUserRole = roleRepository.findByName(ROLE_ADMIN);
 
             userService.createUser(defaultUser, defaultPassword, defaultUserRole);

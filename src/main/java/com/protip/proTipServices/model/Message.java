@@ -35,13 +35,11 @@ public class Message {
     /**
      * Instantiates a new Message.
      *
-     * @param idMessage   the id message
      * @param sender      the sender
      * @param message     the message
      * @param messageType the message type
      */
-    public Message(UUID idMessage, @NotNull ProTipUser sender, @NotNull String message, @NotNull MessageType messageType) {
-        this.idMessage = idMessage;
+    public Message(@NotNull ProTipUser sender, @NotNull String message, @NotNull MessageType messageType) {
         this.sender = sender;
         this.message = message;
         this.messageType = messageType;

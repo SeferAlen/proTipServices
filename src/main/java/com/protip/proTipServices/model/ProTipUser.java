@@ -40,27 +40,47 @@ public class ProTipUser implements Serializable {
     @Column(name = "dateOfBirth")
     @JsonFormat(pattern="yyyy-MM-dd")
     private Date dateOfBirth;
+    @NotNull
+    @Column(name = "proTipUserValidityDate")
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private Date proTipUserValidityDate;
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private Set<Message> message;
 
     /**
      * Instantiates a new Pro tip user.
      */
-    public ProTipUser() {}
+    public ProTipUser() {
+    }
 
     /**
      * Instantiates a new Pro tip user.
      *
-     * @param firstName   the first name
-     * @param lastName    the last name
-     * @param email       the email
-     * @param dateOfBirth the date of birth
+     * @param firstName              the first name
+     * @param lastName               the last name
+     * @param email                  the email
+     * @param dateOfBirth            the date of birth
+     * @param proTipUserValidityDate the pro tip user validity date
      */
-    public ProTipUser(@NotNull String firstName, @NotNull String lastName, @NotNull @Email String email, Date dateOfBirth) {
+    public ProTipUser(@NotNull String firstName,
+                      @NotNull String lastName,
+                      @NotNull @Email(message = "Email not valid") String email,
+                      Date dateOfBirth,
+                      @NotNull Date proTipUserValidityDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
+        this.proTipUserValidityDate = proTipUserValidityDate;
+    }
+
+    /**
+     * Gets id user.
+     *
+     * @return the id user
+     */
+    public UUID getIdUser() {
+        return idUser;
     }
 
     /**
@@ -135,8 +155,26 @@ public class ProTipUser implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }
 
+    /**
+     * Gets pro tip user validity date.
+     *
+     * @return the pro tip user validity date
+     */
+    public Date getProTipUserValidityDate() {
+        return proTipUserValidityDate;
+    }
+
+    /**
+     * Sets pro tip user validity date.
+     *
+     * @param proTipUserValidityDate the pro tip user validity date
+     */
+    public void setProTipUserValidityDate(Date proTipUserValidityDate) {
+        this.proTipUserValidityDate = proTipUserValidityDate;
+    }
+
     @Override
     public String toString() {
-        return firstName + lastName;
+        return firstName + " " + lastName;
     }
 }

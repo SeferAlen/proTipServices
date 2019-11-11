@@ -8,5 +8,6 @@ public interface AuthorizationService {
 
     boolean authorizeUser(final String token) throws GenericProTipServiceException, TokenExpiredException;
     boolean authorizeAdmin(final String token) throws GenericProTipServiceException, TokenExpiredException;
+    public boolean checkProTipUserValidity(final String token) throws GenericProTipServiceException, TokenExpiredException;
     Role getRole(final String token) throws GenericProTipServiceException, TokenExpiredException;
 }

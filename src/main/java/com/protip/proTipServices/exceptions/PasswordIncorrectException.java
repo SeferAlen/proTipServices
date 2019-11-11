@@ -8,7 +8,7 @@ public class PasswordIncorrectException extends Exception {
     /**
      * Instantiates a new Password incorrect exception.
      *
-     * @param message the message
+     * @param message {@link String} the message
      */
     public PasswordIncorrectException(final String message) {
         super(message);

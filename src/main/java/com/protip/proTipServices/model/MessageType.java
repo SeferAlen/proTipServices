@@ -23,18 +23,24 @@ public class MessageType {
     @Column(name = "idMessageType")
     private UUID idMessageType;
     @NotNull
-    @Column(name = "type")
-    private String messageType;
+    @Column(name = "name")
+    private String name;
     @OneToMany(mappedBy = "messageType", cascade = CascadeType.ALL)
     private Set<Message> type;
 
     /**
      * Instantiates a new Message type.
-     *
-     * @param messageType the message type
      */
-    public MessageType(@NotNull String messageType) {
-        this.messageType = messageType;
+    public MessageType() {
+    }
+
+    /**
+     * Instantiates a new Message type.
+     *
+     * @param name the name
+     */
+    public MessageType(@NotNull String name) {
+        this.name = name;
     }
 
     /**
@@ -47,29 +53,38 @@ public class MessageType {
     }
 
     /**
-     * Sets id message type.
+     * Gets name.
      *
-     * @param idMessageType the id message type
+     * @return the name
      */
-    public void setIdMessageType(UUID idMessageType) {
-        this.idMessageType = idMessageType;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Gets message type.
+     * Sets name.
      *
-     * @return the message type
+     * @param name the name
      */
-    public String getMessageType() {
-        return messageType;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
-     * Sets message type.
+     * Gets type.
      *
-     * @param messageType the message type
+     * @return the type
      */
-    public void setMessageType(String messageType) {
-        this.messageType = messageType;
+    public Set<Message> getType() {
+        return type;
+    }
+
+    /**
+     * Sets type.
+     *
+     * @param type the type
+     */
+    public void setType(Set<Message> type) {
+        this.type = type;
     }
 }

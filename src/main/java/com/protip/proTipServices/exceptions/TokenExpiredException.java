@@ -8,7 +8,7 @@ public class TokenExpiredException extends Exception {
     /**
      * Instantiates a new Token expired exception.
      *
-     * @param message the message
+     * @param message {@link String} the message
      */
     public TokenExpiredException(final String message) {
         super(message);
