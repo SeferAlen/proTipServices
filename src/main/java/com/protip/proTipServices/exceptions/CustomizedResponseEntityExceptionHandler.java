@@ -26,7 +26,20 @@ import java.util.Objects;
 @ControllerAdvice
 @RestController
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
-
+    private static final HttpStatus HTTP_UNAUTHORIZED = HttpStatus.UNAUTHORIZED;
+    private static final HttpStatus HTTP_BAD_REQUEST = HttpStatus.BAD_REQUEST;
+    private static final String EXCEPTION_NULL = "Exception must not be null";
+    private static final String EXCEPTION_UNEXPECTED = "Unexpected exception or error";
+    private static final String VALIDATION_FAILED = "Validation failed";
+    private static final String TOKEN_EXPIRED = "Token expired";
+    private static final String TOKEN_UNSUPPORTED = "Unsupported token";
+    private static final String TOKEN_MALFORMED = "Malformed token";
+    private static final String TOKEN_SIGNATURE_INVALID = "Token signature not valid";
+    private static final String TOKEN_ILLEGAL = "Illegal token";
+    private static final String WRONG_PASSWORD = "Wrong password";
+    private static final String USER_NOT_EXIST = "User does not exist";
+    private static final String SERVICE_ERROR_MESSAGE = "Service error";
+    private static final String SERVICE_ERROR_DETAILS = "Please contact us with about this";
     private final Logger logger = LoggerFactory.getLogger(userController.class);
 
     /**
@@ -42,10 +55,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
                                                                   final HttpHeaders headers,
                                                                   final HttpStatus status,
                                                                   final WebRequest request) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Validation failed", ex.getBindingResult().toString()),
-                                    HttpStatus.BAD_REQUEST
+        return new ResponseEntity<>(new ErrorDetails(new Date(), VALIDATION_FAILED, ex.getBindingResult().toString()),
+                                    HTTP_BAD_REQUEST
         );
     }
 
@@ -57,10 +70,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(ExpiredJwtException.class)
     protected ResponseEntity<Object> handleExpiredJwtException(final ExpiredJwtException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Token expired", ex.getLocalizedMessage()),
-                HttpStatus.UNAUTHORIZED
+        return new ResponseEntity<>(new ErrorDetails(new Date(), TOKEN_EXPIRED, ex.getLocalizedMessage()),
+                HTTP_UNAUTHORIZED
         );
     }
 
@@ -72,9 +85,9 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(UnsupportedJwtException.class)
     protected ResponseEntity<Object> handleUnsupportedJwtException(final UnsupportedJwtException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Unsupported token", ex.getLocalizedMessage()),
+        return new ResponseEntity<>(new ErrorDetails(new Date(), TOKEN_UNSUPPORTED, ex.getLocalizedMessage()),
                 HttpStatus.UNAUTHORIZED
         );
     }
@@ -87,10 +100,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(MalformedJwtException.class)
     protected ResponseEntity<Object> handleMalformedJwtException(final MalformedJwtException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Malformed token", ex.getLocalizedMessage()),
-                HttpStatus.UNAUTHORIZED
+        return new ResponseEntity<>(new ErrorDetails(new Date(), TOKEN_MALFORMED, ex.getLocalizedMessage()),
+                HTTP_UNAUTHORIZED
         );
     }
 
@@ -102,10 +115,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(SignatureException.class)
     protected ResponseEntity<Object> handleSignatureException(final SignatureException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Token signature not valid", ex.getLocalizedMessage()),
-                HttpStatus.UNAUTHORIZED
+        return new ResponseEntity<>(new ErrorDetails(new Date(), TOKEN_SIGNATURE_INVALID, ex.getLocalizedMessage()),
+                HTTP_UNAUTHORIZED
         );
     }
 
@@ -117,10 +130,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<Object> handleIllegalArgumentException(final IllegalArgumentException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Illegal token", ex.getLocalizedMessage()),
-                HttpStatus.UNAUTHORIZED
+        return new ResponseEntity<>(new ErrorDetails(new Date(), TOKEN_ILLEGAL, ex.getLocalizedMessage()),
+                HTTP_UNAUTHORIZED
         );
     }
 
@@ -132,10 +145,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(TokenExpiredException.class)
     protected ResponseEntity<Object> handleTokenExpiredException(final TokenExpiredException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Token expired", ex.getLocalizedMessage()),
-                HttpStatus.BAD_REQUEST
+        return new ResponseEntity<>(new ErrorDetails(new Date(), TOKEN_EXPIRED, ex.getLocalizedMessage()),
+                HTTP_BAD_REQUEST
         );
     }
 
@@ -147,10 +160,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(PasswordIncorrectException.class)
     protected ResponseEntity<Object> handlePasswordIncorrectException(final PasswordIncorrectException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Password invalid", ex.getLocalizedMessage()),
-                HttpStatus.UNAUTHORIZED
+        return new ResponseEntity<>(new ErrorDetails(new Date(), WRONG_PASSWORD, ex.getLocalizedMessage()),
+                HTTP_UNAUTHORIZED
         );
     }
 
@@ -162,10 +175,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(UserNotFoundException.class)
     protected ResponseEntity<Object> handleUserNotFoundException(final UserNotFoundException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "User does not exist", ex.getLocalizedMessage()),
-                HttpStatus.BAD_REQUEST
+        return new ResponseEntity<>(new ErrorDetails(new Date(), USER_NOT_EXIST, ex.getLocalizedMessage()),
+                HTTP_BAD_REQUEST
         );
     }
 
@@ -177,12 +190,12 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(GenericProTipServiceException.class)
     protected ResponseEntity<Object> handleGenericProTipServiceException(final GenericProTipServiceException ex) {
-        Objects.requireNonNull(ex, "Exception must not be null");
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
 
-        logger.error("Unexpected exception or error" + ex.getLocalizedMessage());
+        logger.error(EXCEPTION_UNEXPECTED + ex.getLocalizedMessage());
 
-        return new ResponseEntity<>(new ErrorDetails(new Date(), "Service error", "Please contact us with about this"),
-                HttpStatus.BAD_REQUEST
+        return new ResponseEntity<>(new ErrorDetails(new Date(), SERVICE_ERROR_MESSAGE, SERVICE_ERROR_DETAILS),
+                HTTP_BAD_REQUEST
         );
     }
 }

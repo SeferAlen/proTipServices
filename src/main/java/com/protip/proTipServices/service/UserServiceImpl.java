@@ -4,7 +4,6 @@ import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.LoginRepository;
-import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.utility.UserCreateStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,29 +14,33 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Implementation of UserService for dealing with user registration
+ * Service for users and user related actions
  */
 @Service
 public class UserServiceImpl implements UserService {
+    private static final String USER_NULL = "Received message must not be null";
+    private static final String PASSWORD_NULL = "Token must not be null";
+    private static final String ROLE_NULL = "Received message must not be null";
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    LoginRepository loginRepository;
+    private LoginRepository loginRepository;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     /**
-     * Db seeder.
+     * Method for creating new user
      *
-     * @param proTipUser {@link ProTipUser} user for register
-     * @param password {@link String} user password
-     * @return {@link UserCreateStatus} representing status of user creating process
+     * @param proTipUser {@link ProTipUser} the proTipUser to be created
+     * @param password   {@link String}     the password
+     * @param role       {@link Role}       the role
+     * @return {@link UserCreateStatus}     the status representing user creation result
      */
     public UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role) {
-        Objects.requireNonNull(proTipUser, "User cannot be null");
-        Objects.requireNonNull(password, "Password cannot be null");
-        Objects.requireNonNull(role, "Role cannot be null");
+        Objects.requireNonNull(proTipUser, USER_NULL);
+        Objects.requireNonNull(password, PASSWORD_NULL);
+        Objects.requireNonNull(role, ROLE_NULL);
 
         if(userRepository.findAll()
                 .stream()
@@ -63,7 +66,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Method for finding single user by username
      *
-     * @param username {@link String} for register
+     * @param username {@link String} the username
      * @return {@link Login} representing login of found user
      */
     public Login findByUsername(final String username) {

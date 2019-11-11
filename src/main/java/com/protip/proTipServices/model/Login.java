@@ -36,6 +36,7 @@ public class Login implements Serializable {
     @Valid
     @JoinColumn(name = "id_user", nullable = false)
     private ProTipUser user;
+    @NotNull
     @ManyToOne
     @JoinColumn
     private Role role;

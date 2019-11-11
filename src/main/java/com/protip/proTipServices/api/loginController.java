@@ -1,13 +1,13 @@
 package com.protip.proTipServices.api;
 
+import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.PasswordIncorrectException;
+import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
 import com.protip.proTipServices.model.Login;
+import com.protip.proTipServices.model.TokenSet;
 import com.protip.proTipServices.service.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,21 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/login")
-public class loginController {
+public class loginController extends basicController {
 
     @Autowired
     AuthenticationService authenticationService;
 
-    private final Logger logger = LoggerFactory.getLogger(userController.class);
-
     /**
-     * Login response entity
+     * Login endpoint for user login and token generation
      *
-     * @param login the login
-     * @return the response entity with body containing token and Http status
+     * @param login {@link Login}     the login data
+     * @return {@link ResponseEntity} the response entity with body containing token and Http status
      */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> login(@RequestBody final Login login) throws UserNotFoundException, PasswordIncorrectException {
-        return new ResponseEntity<>(authenticationService.loginAndGenerateToken(login), HttpStatus.OK);
+    public ResponseEntity<?> login(@RequestBody final Login login) throws UserNotFoundException,
+                                                                          PasswordIncorrectException,
+                                                                          GenericProTipServiceException,
+                                                                          TokenExpiredException {
+
+        return new ResponseEntity<>(new TokenSet(authenticationService.loginAndGenerateToken(login)), HTTP_OK);
     }
 }

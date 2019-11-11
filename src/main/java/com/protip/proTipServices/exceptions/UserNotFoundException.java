@@ -8,7 +8,7 @@ public class UserNotFoundException extends Exception {
     /**
      * Instantiates a new User not found exception.
      *
-     * @param message the message
+     * @param message {@link String} the message
      */
     public UserNotFoundException(final String message) {
         super(message);
