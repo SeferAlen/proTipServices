@@ -2,9 +2,7 @@ package com.protip.proTipServices.service;
 
 import com.protip.proTipServices.api.msgController;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
-import com.protip.proTipServices.exceptions.PasswordIncorrectException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
-import com.protip.proTipServices.exceptions.UserNotFoundException;
 import com.protip.proTipServices.model.MessageType;
 import com.protip.proTipServices.model.Message;
 import com.protip.proTipServices.model.ProTipUser;
@@ -28,14 +26,14 @@ import java.util.Objects;
 public class MessageServiceImpl implements MessageService {
     private static final String RECEIVED_MESSAGE_NULL = "Received message must not be null";
     private static final String TOKEN_NULL = "Token must not be null";
-    private final String MESSAGE = "MESSAGE";
-    private final String NOTIFICATION = "NOTIFICATION";
-    private final String ROLE_ADMIN = "ADMIN";
-    private final String ROLE_USER = "USER";
-    private final MessageReceivedStatus POSTED = MessageReceivedStatus.POSTED;
-    private final MessageReceivedStatus EXPIRED = MessageReceivedStatus.EXPIRED_PRO_TIP_VALIDITY;
-    private final MessageReceivedStatus ERROR = MessageReceivedStatus.ERROR;
-    private final Logger logger = LoggerFactory.getLogger(msgController.class);
+    private static final String MESSAGE = "MESSAGE";
+    private static final String NOTIFICATION = "NOTIFICATION";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final String ROLE_USER = "USER";
+    private static final MessageReceivedStatus POSTED = MessageReceivedStatus.POSTED;
+    private static final MessageReceivedStatus EXPIRED = MessageReceivedStatus.EXPIRED_PRO_TIP_VALIDITY;
+    private static final MessageReceivedStatus ERROR = MessageReceivedStatus.ERROR;
+    private static final Logger logger = LoggerFactory.getLogger(msgController.class);
 
     @Autowired
     private AuthorizationService authorizationService;
