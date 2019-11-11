@@ -22,8 +22,8 @@ import java.util.Objects;
  */
 @Service
 public class AuthorizationServiceImpl implements AuthorizationService {
-    private final String ROLE_ADMIN = "ADMIN";
-    private final String ROLE_USER = "USER";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final String ROLE_USER = "USER";
     private static final String TOKEN_NULL = "Token must not be null";
     private static final String CLAIM_ROLE = "Role";
     private static final String SOMETHING_WRONG = "Something wrong about roles or token";

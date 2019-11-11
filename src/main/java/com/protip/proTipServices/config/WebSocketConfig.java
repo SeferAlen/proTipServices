@@ -12,6 +12,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+    private static final String APP_DESTINATION_PREFIX = "/app";
+    private static final String DESTINATION_PREFIX = "/topic";
+    private static final String STOMP_ENDPOINT = "/proTipServicesWebSocket";
+    private static final String ORIGINS_ALL = "*";
+    private static final String HOST = "localhost";
+    private static final String CLIENT_LOGIN = "guest";
+    private static final String CLIENT_PASSWORD = "guest";
+    private static final int PORT = 61613;
 
     /**
      * Method for message broker configuration
@@ -19,12 +27,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.enableStompBrokerRelay("/topic")
-                .setRelayHost("localhost")
-                .setRelayPort(61613)
-                .setClientLogin("guest")
-                .setClientPasscode("guest");
+        registry.setApplicationDestinationPrefixes(APP_DESTINATION_PREFIX);
+        registry.enableStompBrokerRelay(DESTINATION_PREFIX)
+                .setRelayHost(HOST)
+                .setRelayPort(PORT)
+                .setClientLogin(CLIENT_LOGIN)
+                .setClientPasscode(CLIENT_PASSWORD);
     }
 
     /**
@@ -33,8 +41,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/proTipServicesWebSocket")
-                .setAllowedOrigins("*")
+        registry.addEndpoint(STOMP_ENDPOINT)
+                .setAllowedOrigins(ORIGINS_ALL)
                 .withSockJS();
     }
 }

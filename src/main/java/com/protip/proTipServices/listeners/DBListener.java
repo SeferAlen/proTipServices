@@ -21,23 +21,23 @@ import java.util.List;
  */
 @Component
 public class DBListener {
-    private final String MESSAGE_TYPE_MESSAGE = "MESSAGE";
-    private final String MESSAGE_TYPE_NOTIFICATION = "NOTIFICATION";
-    private final String ROLE_ADMIN = "ADMIN";
-    private final String ROLE_USER = "USER";
-    private final String DEFAULT_USER_FIRST_NAME = "Alen";
-    private final String DEFAULT_USER_LAST_NAME = "Sefer";
-    private final String DEFAULT_USER_EMAIL = "alensefer1990@gmail.com";
-    private final String ERROR_MESSAGE = "Error while creating default user in database";
-    private final String DATE = "1990-03-22";
-    private final String DATE_PARSE_FORMAT = "yyyy-MM-dd";
+    private static final String MESSAGE_TYPE_MESSAGE = "MESSAGE";
+    private static final String MESSAGE_TYPE_NOTIFICATION = "NOTIFICATION";
+    private static final String ROLE_ADMIN = "ADMIN";
+    private static final String ROLE_USER = "USER";
+    private static final String DEFAULT_USER_FIRST_NAME = "Alen";
+    private static final String DEFAULT_USER_LAST_NAME = "Sefer";
+    private static final String DEFAULT_USER_EMAIL = "alensefer1990@gmail.com";
+    private static final String ERROR_MESSAGE = "Error while creating default user in database";
+    private static final String DATE = "1990-03-22";
+    private static final String DATE_PARSE_FORMAT = "yyyy-MM-dd";
 
     @Autowired
-    RoleRepository roleRepository;
+    private RoleRepository roleRepository;
     @Autowired
-    MessageTypeRepository messageTypeRepository;
+    private MessageTypeRepository messageTypeRepository;
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Value("${default.user.password}")
     private String defaultPassword;
 

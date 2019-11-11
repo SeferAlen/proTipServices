@@ -28,11 +28,11 @@ public class testController extends basicController {
     private static final String TEST_SENDER = "Alen";
 
     @Autowired
-    AuthenticationService authenticationService;
+    private AuthenticationService authenticationService;
     @Autowired
-    AuthorizationService authorizationService;
+    private AuthorizationService authorizationService;
     @Autowired
-    RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * Test user authorization

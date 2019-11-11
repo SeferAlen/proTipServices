@@ -17,7 +17,7 @@ import org.springframework.stereotype.Controller;
 public class stompController extends basicController {
 
     @Autowired
-    RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * Receive message endpoint for receiving messages from stomp client
