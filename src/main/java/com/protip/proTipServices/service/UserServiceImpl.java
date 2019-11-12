@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
         Objects.requireNonNull(password, PASSWORD_NULL);
         Objects.requireNonNull(role, ROLE_NULL);
 
-        if(userRepository.findAll()
+        if (userRepository.findAll()
                 .stream()
                 .anyMatch(user -> user.getEmail().equals(proTipUser.getEmail()))) {
             return UserCreateStatus.ALREADY_EXIST;

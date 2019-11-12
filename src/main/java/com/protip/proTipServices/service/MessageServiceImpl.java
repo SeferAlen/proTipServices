@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Objects;
 
 /**
@@ -57,20 +58,17 @@ public class MessageServiceImpl implements MessageService {
      */
     public MessageReceivedStatus newMessage(final ReceivedMessage receivedMessage,
                                             final String token) throws GenericProTipServiceException,
-                                                                       TokenExpiredException {
+                                                                       TokenExpiredException,
+                                                                       ParseException {
         Objects.requireNonNull(receivedMessage, RECEIVED_MESSAGE_NULL);
         Objects.requireNonNull(token, TOKEN_NULL);
-
-        // TODO: Work in progress
 
         final Role userRole = authorizationService.getRole(token);
         final ProTipUser proTipUser = authenticationService.getProTipUser(token);
         final MessageType messageType = messageTypeRepository.findByName(receivedMessage.getMessageType());
 
-        if(userRole.getName().equals(ROLE_ADMIN) && receivedMessage.getMessageType().equals(NOTIFICATION)) {
-            checkproTipUserValidityDate(token);
+        if (userRole.getName().equals(ROLE_ADMIN) && messageType.getName().equals(NOTIFICATION)) {
             messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
-
             return POSTED;
         } else {
             authorizationService.checkProTipUserValidity(token);
@@ -103,7 +101,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * Check validity date sent by user trying to register in order to prevent date manipulation at frontend
+     * Check validity date sent by user
      *
      * @param token {@link String} the token sent from user
      * @return {@link boolean}     representing validity status

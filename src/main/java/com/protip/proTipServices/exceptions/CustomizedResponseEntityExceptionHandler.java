@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -178,6 +179,21 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         Objects.requireNonNull(ex, EXCEPTION_NULL);
 
         return new ResponseEntity<>(new ErrorDetails(new Date(), USER_NOT_EXIST, ex.getLocalizedMessage()),
+                HTTP_BAD_REQUEST
+        );
+    }
+
+    /**
+     * Method for handling parsing exceptions
+     *
+     * @param ex {@link ParseException} throwned exception
+     * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
+     */
+    @ExceptionHandler(ParseException.class)
+    protected ResponseEntity<Object> handleParseException(final ParseException ex) {
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
+
+        return new ResponseEntity<>(new ErrorDetails(new Date(), SERVICE_ERROR_MESSAGE, SERVICE_ERROR_DETAILS),
                 HTTP_BAD_REQUEST
         );
     }

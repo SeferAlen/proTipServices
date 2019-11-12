@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import java.text.ParseException;
+
 /**
  * REST controller for handling messages between clients and storing them into db
  */
@@ -40,7 +42,8 @@ public class msgController extends basicController {
                                              @RequestBody final ReceivedMessage message) throws UserNotFoundException,
                                                                                                 PasswordIncorrectException,
                                                                                                 GenericProTipServiceException,
-                                                                                                TokenExpiredException {
+                                                                                                TokenExpiredException,
+                                                                                                ParseException {
         final String token = auth.substring(auth.indexOf(EMPTY_SPACE));
 
         messageService.newMessage(message, token);
