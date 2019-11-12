@@ -14,6 +14,7 @@ import com.protip.proTipServices.repository.MessageRepository;
 import com.protip.proTipServices.repository.MessageTypeRepository;
 import com.protip.proTipServices.utility.JwtTokenUtil;
 import com.protip.proTipServices.utility.MessageReceivedStatus;
+import com.protip.proTipServices.utility.ProTipValidityStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,12 @@ public class MessageServiceImpl implements MessageService {
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_USER = "USER";
     private static final MessageReceivedStatus POSTED = MessageReceivedStatus.POSTED;
+    private static final MessageReceivedStatus POSTED_WITH_NEW_TOKEN = MessageReceivedStatus.POSTED_WITH_NEW_TOKEN;
     private static final MessageReceivedStatus EXPIRED = MessageReceivedStatus.EXPIRED_PRO_TIP_VALIDITY;
     private static final MessageReceivedStatus ERROR = MessageReceivedStatus.ERROR;
+    private static final ProTipValidityStatus STATUS_OK = ProTipValidityStatus.OK;
+    private static final ProTipValidityStatus STATUS_EXPIRED = ProTipValidityStatus.EXPIRED;
+    private static final ProTipValidityStatus STATUS_NEED_UPDATE = ProTipValidityStatus.NEED_UPDATE;
     private static final Logger logger = LoggerFactory.getLogger(msgController.class);
 
     @Autowired
@@ -68,15 +73,30 @@ public class MessageServiceImpl implements MessageService {
         final MessageType messageType = messageTypeRepository.findByName(receivedMessage.getMessageType());
 
         if (userRole.getName().equals(ROLE_ADMIN) && messageType.getName().equals(NOTIFICATION)) {
+            logger.info("New notification: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
             messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
             return POSTED;
-        } else {
-            authorizationService.checkProTipUserValidity(token);
-            //template.convertAndSend("/topic/javainuse", message);
-            //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
-            logger.info("New message : " + ", from " );
+        } else if (userRole.getName().equals(ROLE_USER) && messageType.getName().equals(MESSAGE)){
+            final ProTipValidityStatus proTipValidityStatusFromToken = authorizationService.checkProTipUserValidity(token);
 
-            return POSTED;
+            if (STATUS_OK == proTipValidityStatusFromToken) {
+                logger.info("New message: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
+                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
+                //template.convertAndSend("/topic/javainuse", message);
+                //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+                return POSTED;
+            } else if (STATUS_NEED_UPDATE == proTipValidityStatusFromToken) {
+                logger.info("New message: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
+                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
+                //template.convertAndSend("/topic/javainuse", message);
+                //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+                return POSTED_WITH_NEW_TOKEN;
+            } else if (STATUS_EXPIRED == proTipValidityStatusFromToken) {
+                return EXPIRED;
+            }
+            return ERROR;
+        } else {
+            return ERROR;
         }
     }
 

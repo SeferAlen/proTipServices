@@ -57,7 +57,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 loginRepository.findByUsername(login.getUsername()).getPassword());
         if (!passwordCorrect) throw new PasswordIncorrectException("Password " + login.getPassword() + " is wrong");
 
-        login.setRole(loginRepository.findByUsername(login.getUsername()).getRole());
+        user.setRole(loginRepository.findByUsername(login.getUsername()).getRole());
+
+        return JwtTokenUtil.generateToken(user, getProTipUser(user));
+    }
+
+    /**
+     * Method for updating token
+     *
+     * @param token {@link String} the old token
+     * @return {@link String}      the new created token
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws TokenExpiredException         the token expired exception
+     */
+    public String updateToken(final String token) throws GenericProTipServiceException, TokenExpiredException {
+        Objects.requireNonNull(token, TOKEN_NULL);
+
+        final String username = JwtTokenUtil.getUsernameFromToken(token);
+        final Login user = loginRepository.findByUsername(username);
+        user.setRole(loginRepository.findByUsername(username).getRole());
 
         return JwtTokenUtil.generateToken(user, getProTipUser(user));
     }

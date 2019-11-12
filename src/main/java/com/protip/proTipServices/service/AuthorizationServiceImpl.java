@@ -10,6 +10,7 @@ import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.utility.DbaUtil;
 import com.protip.proTipServices.utility.JwtTokenUtil;
+import com.protip.proTipServices.utility.ProTipValidityStatus;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     private static final String CLAIM_VALIDITY_DATE = "ProTipUserValidityDate";
     private static final String SOMETHING_WRONG = "Something wrong about roles or token";
     private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final ProTipValidityStatus STATUS_OK = ProTipValidityStatus.OK;
+    private static final ProTipValidityStatus STATUS_EXPIRED = ProTipValidityStatus.EXPIRED;
+    private static final ProTipValidityStatus STATUS_NEED_UPDATE = ProTipValidityStatus.NEED_UPDATE;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -85,22 +89,30 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * Method for checking validity of proTipUserValidity field in token
      *
      * @param token {@link String} the token
-     * @return {@link boolean}     the boolean representing validity status
+     * @return {@link ProTipValidityStatus} the status of ProTipUser
      */
-    public boolean checkProTipUserValidity(final String token) throws ParseException {
+    public ProTipValidityStatus checkProTipUserValidity(final String token) throws ParseException {
         Objects.requireNonNull(token, TOKEN_NULL);
 
         final Claims claims = JwtTokenUtil.getAllClaimsFromToken(token);
         final Login login = loginRepository.findByUsername(claims.getSubject());
         final ProTipUser proTipUser = DbaUtil.initializeAndUnproxy(login.getUser());
         final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        final Date validityDate = dateFormat.parse((String) claims.get(CLAIM_VALIDITY_DATE));
         final Date now = new Date();
+        Date validityDate = dateFormat.parse((String) claims.get(CLAIM_VALIDITY_DATE));
 
+        // Check validity date from token
         if (proTipUser.getProTipUserValidityDate() == null || !(validityDate.after(now))) {
-            return false;
+            validityDate = dateFormat.parse(userRepository.getValidityDate(proTipUser.getIdUser()));
+
+            // Check validity date from db, because it could be updated after token was created
+            if (validityDate.after(now)) {
+                return STATUS_NEED_UPDATE;
+            } else  {
+                return STATUS_EXPIRED;
+            }
         } else {
-            return true;
+            return STATUS_OK;
         }
     }
 

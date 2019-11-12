@@ -29,6 +29,7 @@ import java.util.Objects;
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
     private static final HttpStatus HTTP_UNAUTHORIZED = HttpStatus.UNAUTHORIZED;
     private static final HttpStatus HTTP_BAD_REQUEST = HttpStatus.BAD_REQUEST;
+    protected static final HttpStatus HTTP_INTERNAL_ERROR = HttpStatus.INTERNAL_SERVER_ERROR;
     private static final String EXCEPTION_NULL = "Exception must not be null";
     private static final String EXCEPTION_UNEXPECTED = "Unexpected exception or error";
     private static final String VALIDATION_FAILED = "Validation failed";
@@ -194,7 +195,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         Objects.requireNonNull(ex, EXCEPTION_NULL);
 
         return new ResponseEntity<>(new ErrorDetails(new Date(), SERVICE_ERROR_MESSAGE, SERVICE_ERROR_DETAILS),
-                HTTP_BAD_REQUEST
+                HTTP_INTERNAL_ERROR
         );
     }
 
@@ -211,7 +212,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         logger.error(EXCEPTION_UNEXPECTED + ex.getLocalizedMessage());
 
         return new ResponseEntity<>(new ErrorDetails(new Date(), SERVICE_ERROR_MESSAGE, SERVICE_ERROR_DETAILS),
-                HTTP_BAD_REQUEST
+                HTTP_INTERNAL_ERROR
         );
     }
 }

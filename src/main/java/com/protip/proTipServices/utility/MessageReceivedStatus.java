@@ -5,6 +5,7 @@ package com.protip.proTipServices.utility;
  */
 public enum MessageReceivedStatus {
     POSTED,
+    POSTED_WITH_NEW_TOKEN,
     EXPIRED_PRO_TIP_VALIDITY,
     ERROR
 }
