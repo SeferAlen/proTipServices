@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/test")
 public class testController extends basicController {
-    private static final String USER_AUTHORIZED = "User is authorized";
-    private static final String USER_UNAUTHORIZED = "User not authorized, cannot proceed";
     private static final String TEST_SENDER = "Alen";
 
     @Autowired

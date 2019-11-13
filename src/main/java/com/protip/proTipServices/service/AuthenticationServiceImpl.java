@@ -86,10 +86,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param token {@link String} the token
      * @return {@link ProTipUser}  the proTipUser
      */
-    public ProTipUser getProTipUser(final String token) {
+    public ProTipUser getProTipUser(final String token) throws UserNotFoundException{
         Objects.requireNonNull(token, TOKEN_NULL);
+
         final Claims claims = JwtTokenUtil.getAllClaimsFromToken(token);
-        final Login login = loginRepository.findByUsername(claims.getSubject());
+        final String username = claims.getSubject();
+        final Login login = loginRepository.findByUsername(username);
+
+        if (login == null) throw new UserNotFoundException("User " + username + " does not exist");
+
         final ProTipUser proTipUser = DbaUtil.initializeAndUnproxy(login.getUser());
 
         return proTipUser;

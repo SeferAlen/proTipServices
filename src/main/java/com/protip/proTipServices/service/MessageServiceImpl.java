@@ -5,13 +5,10 @@ import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.PasswordIncorrectException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
-import com.protip.proTipServices.model.MessageType;
-import com.protip.proTipServices.model.Message;
-import com.protip.proTipServices.model.ProTipUser;
-import com.protip.proTipServices.model.ReceivedMessage;
-import com.protip.proTipServices.model.Role;
+import com.protip.proTipServices.model.*;
 import com.protip.proTipServices.repository.MessageRepository;
 import com.protip.proTipServices.repository.MessageTypeRepository;
+import com.protip.proTipServices.utility.Converter;
 import com.protip.proTipServices.utility.JwtTokenUtil;
 import com.protip.proTipServices.utility.MessageReceivedStatus;
 import com.protip.proTipServices.utility.ProTipValidityStatus;
@@ -21,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Service for user messages and message related actions
@@ -64,7 +61,8 @@ public class MessageServiceImpl implements MessageService {
     public MessageReceivedStatus newMessage(final ReceivedMessage receivedMessage,
                                             final String token) throws GenericProTipServiceException,
                                                                        TokenExpiredException,
-                                                                       ParseException {
+                                                                       ParseException,
+                                                                       UserNotFoundException {
         Objects.requireNonNull(receivedMessage, RECEIVED_MESSAGE_NULL);
         Objects.requireNonNull(token, TOKEN_NULL);
 
@@ -72,22 +70,22 @@ public class MessageServiceImpl implements MessageService {
         final ProTipUser proTipUser = authenticationService.getProTipUser(token);
         final MessageType messageType = messageTypeRepository.findByName(receivedMessage.getMessageType());
 
-        if (userRole.getName().equals(ROLE_ADMIN) && messageType.getName().equals(NOTIFICATION)) {
+        if (userRole.getName().equals(ROLE_ADMIN)) {
             logger.info("New notification: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
-            messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
+            messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), new Date(), messageType));
             return POSTED;
         } else if (userRole.getName().equals(ROLE_USER) && messageType.getName().equals(MESSAGE)){
             final ProTipValidityStatus proTipValidityStatusFromToken = authorizationService.checkProTipUserValidity(token);
 
             if (STATUS_OK == proTipValidityStatusFromToken) {
                 logger.info("New message: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
-                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
+                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), new Date(), messageType));
                 //template.convertAndSend("/topic/javainuse", message);
                 //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
                 return POSTED;
             } else if (STATUS_NEED_UPDATE == proTipValidityStatusFromToken) {
                 logger.info("New message: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
-                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
+                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), new Date(), messageType));
                 //template.convertAndSend("/topic/javainuse", message);
                 //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
                 return POSTED_WITH_NEW_TOKEN;
@@ -118,6 +116,18 @@ public class MessageServiceImpl implements MessageService {
         // TODO: Work in progress
 
         return ERROR;
+    }
+
+    /**
+     * Method for getting latest chat messages sorted by date
+     *
+     * @return {@link List<Message>} the List<Message> list of 30 latest messages
+     */
+    public List<SendMessage> getAll() {
+        final List<Message> messages = messageRepository.getAllSorted();
+        final List<SendMessage> sendMessages = Converter.fromMessageToSendMessage(messages);
+
+        return sendMessages;
     }
 
     /**

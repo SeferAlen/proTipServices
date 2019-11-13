@@ -102,7 +102,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         Date validityDate = dateFormat.parse((String) claims.get(CLAIM_VALIDITY_DATE));
 
         // Check validity date from token
-        if (proTipUser.getProTipUserValidityDate() == null || !(validityDate.after(now))) {
+        if (validityDate == null || !(validityDate.after(now))) {
             validityDate = dateFormat.parse(userRepository.getValidityDate(proTipUser.getIdUser()));
 
             // Check validity date from db, because it could be updated after token was created

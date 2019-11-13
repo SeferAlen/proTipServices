@@ -9,7 +9,15 @@ import com.protip.proTipServices.model.ProTipUser;
 
 public interface AuthenticationService {
 
-    public abstract String loginAndGenerateToken(final Login login) throws UserNotFoundException, PasswordIncorrectException, GenericProTipServiceException, TokenExpiredException;
-    public abstract String updateToken(final String token) throws UserNotFoundException, PasswordIncorrectException, GenericProTipServiceException, TokenExpiredException;
-    public abstract ProTipUser getProTipUser(final String token) throws GenericProTipServiceException, TokenExpiredException;
+    public abstract String loginAndGenerateToken(final Login login) throws UserNotFoundException,
+                                                                           PasswordIncorrectException,
+                                                                           GenericProTipServiceException,
+                                                                           TokenExpiredException;
+    public abstract String updateToken(final String token) throws UserNotFoundException,
+                                                                  PasswordIncorrectException,
+                                                                  GenericProTipServiceException,
+                                                                  TokenExpiredException;
+    public abstract ProTipUser getProTipUser(final String token) throws GenericProTipServiceException,
+                                                                        TokenExpiredException,
+                                                                        UserNotFoundException;
 }

@@ -1,24 +1,25 @@
 package com.protip.proTipServices.api;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.PasswordIncorrectException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
 import com.protip.proTipServices.model.Message;
 import com.protip.proTipServices.model.ReceivedMessage;
+import com.protip.proTipServices.model.SendMessage;
 import com.protip.proTipServices.service.AuthenticationService;
+import com.protip.proTipServices.service.AuthorizationService;
 import com.protip.proTipServices.service.MessageService;
 import com.protip.proTipServices.utility.MessageReceivedStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * REST controller for handling messages between clients and storing them into db
@@ -38,6 +39,8 @@ public class msgController extends basicController {
     private MessageService messageService;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private AuthorizationService authorizationService;
 
     /**
      * Receive message endpoint for receiving messages
@@ -69,6 +72,32 @@ public class msgController extends basicController {
             return new ResponseEntity<>(PRO_TIP_USER_EXPIRED, HTTP_BAD_REQUEST);
         } else {
             return new ResponseEntity<>(SERVICE_ERROR_MESSAGE + ". " + SERVICE_ERROR_DETAILS, HTTP_INTERNAL_ERROR);
+        }
+    }
+
+    /**
+     * Get latest chat messages
+     *
+     * @return {@link ResponseEntity}   the response entity with body containing messages and Http status
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws TokenExpiredException         the token expired exception
+     * @throws UserNotFoundException         the user not found exception
+     * @throws PasswordIncorrectException    the token expired exception
+     */
+    @GetMapping(value = "/messages", produces = "application/json")
+    public ResponseEntity<?> getAllMessages(@RequestHeader("Authorization") final String auth) throws TokenExpiredException,
+                                                                                                      GenericProTipServiceException {
+        final String token = auth.substring(auth.indexOf(EMPTY_SPACE));
+        final List<SendMessage> messages;
+
+        if (authorizationService.authorizeUser(token)) {
+            messages = messageService.getAll();
+
+            return new ResponseEntity<>(messages, HTTP_OK);
+        } else {
+            messages = new ArrayList<>();
+
+            return new ResponseEntity<>(messages, HTTP_UNAUTHORIZED);
         }
     }
 }
