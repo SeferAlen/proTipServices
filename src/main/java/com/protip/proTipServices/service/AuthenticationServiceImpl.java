@@ -35,8 +35,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     /**
      * Method for generating token from login data
      *
-     * @param login    {@link Login}    the login data
-     * @return {@link String}           the created token
+     * @param login {@link Login} the login data
+     * @return {@link String}     the created token
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      * @throws UserNotFoundException         the user not found exception
@@ -104,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * Method for getting {@link ProTipUser} from login data
      *
      * @param login {@link Login} the login data
-     * @return {@link ProTipUser}  the proTipUser
+     * @return {@link ProTipUser} the proTipUser
      */
     private ProTipUser getProTipUser(final Login login) throws GenericProTipServiceException, TokenExpiredException {
         final ProTipUser proTipUser = DbaUtil.initializeAndUnproxy(login.getUser());

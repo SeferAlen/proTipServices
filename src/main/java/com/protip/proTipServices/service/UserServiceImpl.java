@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
      * Method for finding single user by username
      *
      * @param username {@link String} the username
-     * @return {@link Login} representing login of found user
+     * @return {@link Login}          representing login of found user
      */
     public Login findByUsername(final String username) {
         return loginRepository.findByUsername(username);

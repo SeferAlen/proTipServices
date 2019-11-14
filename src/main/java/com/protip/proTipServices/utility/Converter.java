@@ -15,7 +15,7 @@ public class Converter {
      * Method for getting {@link List<SendMessage>} from {@link List<Message>}
      *
      * @param messages {@link List<Message>} the messages list to be converted
-     * @return {@link List<SendMessage>} the converted list of messages
+     * @return {@link List<SendMessage>}     the converted list of messages
      */
     public static List<SendMessage> fromMessageToSendMessage(final List<Message> messages) {
         final List<SendMessage> sendMessages = new ArrayList<>();

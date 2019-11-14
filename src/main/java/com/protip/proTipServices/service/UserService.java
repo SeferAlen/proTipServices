@@ -7,10 +7,9 @@ import com.protip.proTipServices.utility.UserCreateStatus;
 
 import java.util.List;
 
-//Service for handling all user related actions
 public interface UserService {
 
-    UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role);
-    List<ProTipUser> getUsers();
-    Login findByUsername(final String username);
+    public abstract UserCreateStatus createUser(final ProTipUser proTipUser, final String password, final Role role);
+    public abstract List<ProTipUser> getUsers();
+    public abstract Login findByUsername(final String username);
 }

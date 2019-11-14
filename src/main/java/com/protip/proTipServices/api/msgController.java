@@ -1,11 +1,9 @@
 package com.protip.proTipServices.api;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.PasswordIncorrectException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
-import com.protip.proTipServices.model.Message;
 import com.protip.proTipServices.model.ReceivedMessage;
 import com.protip.proTipServices.model.SendMessage;
 import com.protip.proTipServices.service.AuthenticationService;
@@ -14,11 +12,15 @@ import com.protip.proTipServices.service.MessageService;
 import com.protip.proTipServices.utility.MessageReceivedStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,8 +68,7 @@ public class msgController extends basicController {
         if (messageReceivedStatus == POSTED) {
             return new ResponseEntity<>(MESSAGE_POSTED, HTTP_CREATED);
         } else if (messageReceivedStatus == POSTED_WITH_NEW_TOKEN) {
-            return new ResponseEntity<>(MESSAGE_POSTED_NEW_TOKEN + authenticationService.updateToken(token),
-                    HTTP_CREATED);
+            return new ResponseEntity<>(MESSAGE_POSTED_NEW_TOKEN + authenticationService.updateToken(token), HTTP_CREATED);
         } else if (messageReceivedStatus == EXPIRED) {
             return new ResponseEntity<>(PRO_TIP_USER_EXPIRED, HTTP_BAD_REQUEST);
         } else {
@@ -76,7 +77,7 @@ public class msgController extends basicController {
     }
 
     /**
-     * Get latest chat messages
+     * Get latest chat messages endpoint
      *
      * @return {@link ResponseEntity}   the response entity with body containing messages and Http status
      * @throws GenericProTipServiceException the generic proTipService exception
@@ -88,16 +89,13 @@ public class msgController extends basicController {
     public ResponseEntity<?> getAllMessages(@RequestHeader("Authorization") final String auth) throws TokenExpiredException,
                                                                                                       GenericProTipServiceException {
         final String token = auth.substring(auth.indexOf(EMPTY_SPACE));
-        final List<SendMessage> messages;
 
         if (authorizationService.authorizeUser(token)) {
-            messages = messageService.getAll();
+            final List<SendMessage> messages = messageService.getAll();
 
             return new ResponseEntity<>(messages, HTTP_OK);
         } else {
-            messages = new ArrayList<>();
-
-            return new ResponseEntity<>(messages, HTTP_UNAUTHORIZED);
+            return new ResponseEntity<>("", HTTP_UNAUTHORIZED);
         }
     }
 }

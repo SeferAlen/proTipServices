@@ -9,10 +9,10 @@ import java.text.ParseException;
 
 public interface AuthorizationService {
 
-    boolean authorizeUser(final String token) throws GenericProTipServiceException, TokenExpiredException;
-    boolean authorizeAdmin(final String token) throws GenericProTipServiceException, TokenExpiredException;
-    public ProTipValidityStatus checkProTipUserValidity(final String token) throws GenericProTipServiceException,
-                                                                      TokenExpiredException,
-                                                                      ParseException;
-    Role getRole(final String token) throws GenericProTipServiceException, TokenExpiredException;
+    public abstract boolean authorizeUser(final String token) throws GenericProTipServiceException, TokenExpiredException;
+    public abstract boolean authorizeAdmin(final String token) throws GenericProTipServiceException, TokenExpiredException;
+    public abstract ProTipValidityStatus checkProTipUserValidity(final String token) throws GenericProTipServiceException,
+                                                                                            TokenExpiredException,
+                                                                                            ParseException;
+    public abstract Role getRole(final String token) throws GenericProTipServiceException, TokenExpiredException;
 }

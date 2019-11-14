@@ -25,6 +25,7 @@ public class DbaUtil {
         if (entity instanceof HibernateProxy) {
             entity = (T) ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
         }
+
         return entity;
     }
 }

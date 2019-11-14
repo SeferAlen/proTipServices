@@ -2,14 +2,17 @@ package com.protip.proTipServices.service;
 
 import com.protip.proTipServices.api.msgController;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
-import com.protip.proTipServices.exceptions.PasswordIncorrectException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
-import com.protip.proTipServices.model.*;
+import com.protip.proTipServices.model.MessageType;
+import com.protip.proTipServices.model.ProTipUser;
+import com.protip.proTipServices.model.ReceivedMessage;
+import com.protip.proTipServices.model.SendMessage;
+import com.protip.proTipServices.model.Message;
+import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.MessageRepository;
 import com.protip.proTipServices.repository.MessageTypeRepository;
 import com.protip.proTipServices.utility.Converter;
-import com.protip.proTipServices.utility.JwtTokenUtil;
 import com.protip.proTipServices.utility.MessageReceivedStatus;
 import com.protip.proTipServices.utility.ProTipValidityStatus;
 import org.slf4j.Logger;
@@ -18,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Service for user messages and message related actions
@@ -71,29 +76,24 @@ public class MessageServiceImpl implements MessageService {
         final MessageType messageType = messageTypeRepository.findByName(receivedMessage.getMessageType());
 
         if (userRole.getName().equals(ROLE_ADMIN)) {
-            logger.info("New notification: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
-            messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), new Date(), messageType));
+            saveMessage(receivedMessage, messageType, proTipUser);
+
             return POSTED;
-        } else if (userRole.getName().equals(ROLE_USER) && messageType.getName().equals(MESSAGE)){
+        } else {
             final ProTipValidityStatus proTipValidityStatusFromToken = authorizationService.checkProTipUserValidity(token);
 
-            if (STATUS_OK == proTipValidityStatusFromToken) {
-                logger.info("New message: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
-                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), new Date(), messageType));
-                //template.convertAndSend("/topic/javainuse", message);
-                //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+            if (proTipValidityStatusFromToken == STATUS_OK) {
+                saveMessage(receivedMessage, messageType, proTipUser);
+
                 return POSTED;
-            } else if (STATUS_NEED_UPDATE == proTipValidityStatusFromToken) {
-                logger.info("New message: " + receivedMessage.getMessage() + ", from " + proTipUser.getFirstName() + " " + proTipUser.getLastName());
-                messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), new Date(), messageType));
-                //template.convertAndSend("/topic/javainuse", message);
-                //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+            } else if (proTipValidityStatusFromToken == STATUS_NEED_UPDATE) {
+                saveMessage(receivedMessage, messageType, proTipUser);
+
                 return POSTED_WITH_NEW_TOKEN;
-            } else if (STATUS_EXPIRED == proTipValidityStatusFromToken) {
+            } else if (proTipValidityStatusFromToken == STATUS_EXPIRED) {
                 return EXPIRED;
             }
-            return ERROR;
-        } else {
+
             return ERROR;
         }
     }
@@ -130,13 +130,34 @@ public class MessageServiceImpl implements MessageService {
         return sendMessages;
     }
 
+
     /**
-     * Check validity date sent by user
+     * Method for saving messages and notifications in db
      *
-     * @param token {@link String} the token sent from user
-     * @return {@link boolean}     representing validity status
+     * @param message {@link ReceivedMessage} the receivedMessage
+     * @param type    {@link MessageType}     the type
+     * @param type    {@link ProTipUser}      the user
      */
-    private boolean checkproTipUserValidityDate(final String token) {
-        return JwtTokenUtil.checkProTipUserValidityDate(token);
+    private void saveMessage(final ReceivedMessage message, final MessageType type, final ProTipUser user) {
+        final String loggerInfo;
+
+        if (type.getName() == NOTIFICATION) {
+            loggerInfo = "New notification: ";
+        } else {
+            loggerInfo = "New message: ";
+        }
+
+        logger.info(loggerInfo + message.getMessage() + ", from " + user.getFirstName() + " " + user.getLastName());
+        messageRepository.save(new Message(user, message.getMessage(), new Date(), type));
+    }
+
+    /**
+     * Method for handling rabbitMQ messaging
+     */
+    private void rabbitMQMessage () {
+        // TODO: Work in progress
+
+        //template.convertAndSend("/topic/javainuse", message);
+        //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
     }
 }

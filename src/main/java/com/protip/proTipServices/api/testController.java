@@ -33,13 +33,14 @@ public class testController extends basicController {
     private RabbitTemplate rabbitTemplate;
 
     /**
-     * Test user authorization
+     * Test user authorization endpoint
      *
      * @param tokenSet the token set
-     * @return the response entity
+     * @return         the response entity
      */
     @GetMapping(value = "authUser")
-    public ResponseEntity<?> testUserAuthorization(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException, TokenExpiredException {
+    public ResponseEntity<?> testUserAuthorization(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException,
+                                                                                                TokenExpiredException {
 
         final Boolean userOk = authorizationService.authorizeUser(tokenSet.getToken());
         final String message;
@@ -54,29 +55,31 @@ public class testController extends basicController {
     }
 
     /**
-     * Test admin authorization
+     * Test admin authorization endpoint
      *
      * @param tokenSet the token set
-     * @return the response entity
+     * @return         the response entity
      */
     @GetMapping(value = "authAdmin")
-    public ResponseEntity<?> testAdminAuthorization(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException, TokenExpiredException {
+    public ResponseEntity<?> testAdminAuthorization(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException,
+                                                                                                 TokenExpiredException {
         final Boolean userOk = authorizationService.authorizeAdmin(tokenSet.getToken());
-
         final String message;
-        if(userOk) {
+
+        if (userOk) {
             message = USER_AUTHORIZED;
         } else {
             message = USER_UNAUTHORIZED;
         }
+
         return new ResponseEntity<>(message, HTTP_OK);
     }
 
     /**
-     * Test RabbitMQ message sending
+     * Test RabbitMQ message sending endpoint
      *
      * @param message the message
-     * @return the response entity
+     * @return        the response entity
      */
     @PostMapping(value = "sendMessage")
     public ResponseEntity<?> testAdminAuthorization(@RequestBody final Message message) {
@@ -86,6 +89,7 @@ public class testController extends basicController {
         } else {
             rabbitTemplate.convertAndSend(Config.getChatQueue(), message.getMessage());
         }
+
         return new ResponseEntity<>(message, HTTP_OK);
     }
 }

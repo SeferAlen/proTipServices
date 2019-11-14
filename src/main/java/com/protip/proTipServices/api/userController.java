@@ -45,7 +45,7 @@ public class userController extends basicController{
     private AuthorizationService authorizationService;
 
     /**
-     * Get all users from database.
+     * Get all users from database endpoint
      *
      * @param tokenSet {@link TokenSet} the tokenSet containing token
      * @return {@link ResponseEntity}   the users
@@ -61,7 +61,7 @@ public class userController extends basicController{
     }
 
     /**
-     * Register new user
+     * Register new user endpoint
      *
      * @param register {@link Register} the register containing user info and password
      * @return {@link ResponseEntity}   the response entity with body with message status and Http status

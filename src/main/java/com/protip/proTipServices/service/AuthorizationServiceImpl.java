@@ -19,7 +19,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -88,7 +87,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     /**
      * Method for checking validity of proTipUserValidity field in token
      *
-     * @param token {@link String} the token
+     * @param token {@link String}          the token
      * @return {@link ProTipValidityStatus} the status of ProTipUser
      */
     public ProTipValidityStatus checkProTipUserValidity(final String token) throws ParseException {
