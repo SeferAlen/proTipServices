@@ -43,9 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @throws PasswordIncorrectException    the token expired exception
      */
     public String loginAndGenerateToken(final Login login) throws UserNotFoundException,
-                                                                  PasswordIncorrectException,
-                                                                  GenericProTipServiceException,
-                                                                  TokenExpiredException {
+                                                                  PasswordIncorrectException {
         Objects.requireNonNull(login, LOGIN_NULL);
 
         logger.info("User logging : \nUsername: " + login.getUsername() + "\nPassword: " + login.getPassword());
@@ -70,7 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      */
-    public String updateToken(final String token) throws GenericProTipServiceException, TokenExpiredException {
+    public String updateToken(final String token) {
         Objects.requireNonNull(token, TOKEN_NULL);
 
         final String username = JwtTokenUtil.getUsernameFromToken(token);
@@ -86,7 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param token {@link String} the token
      * @return {@link ProTipUser}  the proTipUser
      */
-    public ProTipUser getProTipUser(final String token) throws UserNotFoundException{
+    public ProTipUser getProTipUser(final String token) throws UserNotFoundException {
         Objects.requireNonNull(token, TOKEN_NULL);
 
         final Claims claims = JwtTokenUtil.getAllClaimsFromToken(token);
@@ -106,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param login {@link Login} the login data
      * @return {@link ProTipUser} the proTipUser
      */
-    private ProTipUser getProTipUser(final Login login) throws GenericProTipServiceException, TokenExpiredException {
+    private ProTipUser getProTipUser(final Login login) {
         final ProTipUser proTipUser = DbaUtil.initializeAndUnproxy(login.getUser());
 
         return proTipUser;
