@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
         Objects.requireNonNull(password, PASSWORD_NULL);
         Objects.requireNonNull(role, ROLE_NULL);
 
-        if(userRepository.findAll()
+        if (userRepository.findAll()
                 .stream()
                 .anyMatch(user -> user.getEmail().equals(proTipUser.getEmail()))) {
             return UserCreateStatus.ALREADY_EXIST;
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
      * Method for finding single user by username
      *
      * @param username {@link String} the username
-     * @return {@link Login} representing login of found user
+     * @return {@link Login}          representing login of found user
      */
     public Login findByUsername(final String username) {
         return loginRepository.findByUsername(username);

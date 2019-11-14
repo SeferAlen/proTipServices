@@ -2,23 +2,27 @@ package com.protip.proTipServices.service;
 
 import com.protip.proTipServices.api.msgController;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
-import com.protip.proTipServices.exceptions.PasswordIncorrectException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
 import com.protip.proTipServices.model.MessageType;
-import com.protip.proTipServices.model.Message;
 import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.ReceivedMessage;
+import com.protip.proTipServices.model.SendMessage;
+import com.protip.proTipServices.model.Message;
 import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.MessageRepository;
 import com.protip.proTipServices.repository.MessageTypeRepository;
-import com.protip.proTipServices.utility.JwtTokenUtil;
+import com.protip.proTipServices.utility.Converter;
 import com.protip.proTipServices.utility.MessageReceivedStatus;
+import com.protip.proTipServices.utility.ProTipValidityStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -33,8 +37,12 @@ public class MessageServiceImpl implements MessageService {
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_USER = "USER";
     private static final MessageReceivedStatus POSTED = MessageReceivedStatus.POSTED;
+    private static final MessageReceivedStatus POSTED_WITH_NEW_TOKEN = MessageReceivedStatus.POSTED_WITH_NEW_TOKEN;
     private static final MessageReceivedStatus EXPIRED = MessageReceivedStatus.EXPIRED_PRO_TIP_VALIDITY;
     private static final MessageReceivedStatus ERROR = MessageReceivedStatus.ERROR;
+    private static final ProTipValidityStatus STATUS_OK = ProTipValidityStatus.OK;
+    private static final ProTipValidityStatus STATUS_EXPIRED = ProTipValidityStatus.EXPIRED;
+    private static final ProTipValidityStatus STATUS_NEED_UPDATE = ProTipValidityStatus.NEED_UPDATE;
     private static final Logger logger = LoggerFactory.getLogger(msgController.class);
 
     @Autowired
@@ -57,28 +65,36 @@ public class MessageServiceImpl implements MessageService {
      */
     public MessageReceivedStatus newMessage(final ReceivedMessage receivedMessage,
                                             final String token) throws GenericProTipServiceException,
-                                                                       TokenExpiredException {
+                                                                       TokenExpiredException,
+                                                                       ParseException,
+                                                                       UserNotFoundException {
         Objects.requireNonNull(receivedMessage, RECEIVED_MESSAGE_NULL);
         Objects.requireNonNull(token, TOKEN_NULL);
-
-        // TODO: Work in progress
 
         final Role userRole = authorizationService.getRole(token);
         final ProTipUser proTipUser = authenticationService.getProTipUser(token);
         final MessageType messageType = messageTypeRepository.findByName(receivedMessage.getMessageType());
 
-        if(userRole.getName().equals(ROLE_ADMIN) && receivedMessage.getMessageType().equals(NOTIFICATION)) {
-            checkproTipUserValidityDate(token);
-            messageRepository.save(new Message(proTipUser, receivedMessage.getMessage(), messageType));
+        if (userRole.getName().equals(ROLE_ADMIN)) {
+            saveMessage(receivedMessage, messageType, proTipUser);
 
             return POSTED;
         } else {
-            authorizationService.checkProTipUserValidity(token);
-            //template.convertAndSend("/topic/javainuse", message);
-            //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
-            logger.info("New message : " + ", from " );
+            final ProTipValidityStatus proTipValidityStatusFromToken = authorizationService.checkProTipUserValidity(token);
 
-            return POSTED;
+            if (proTipValidityStatusFromToken == STATUS_OK) {
+                saveMessage(receivedMessage, messageType, proTipUser);
+
+                return POSTED;
+            } else if (proTipValidityStatusFromToken == STATUS_NEED_UPDATE) {
+                saveMessage(receivedMessage, messageType, proTipUser);
+
+                return POSTED_WITH_NEW_TOKEN;
+            } else if (proTipValidityStatusFromToken == STATUS_EXPIRED) {
+                return EXPIRED;
+            }
+
+            return ERROR;
         }
     }
 
@@ -103,12 +119,45 @@ public class MessageServiceImpl implements MessageService {
     }
 
     /**
-     * Check validity date sent by user trying to register in order to prevent date manipulation at frontend
+     * Method for getting latest chat messages sorted by date
      *
-     * @param token {@link String} the token sent from user
-     * @return {@link boolean}     representing validity status
+     * @return {@link List<Message>} the List<Message> list of 30 latest messages
      */
-    private boolean checkproTipUserValidityDate(final String token) {
-        return JwtTokenUtil.checkProTipUserValidityDate(token);
+    public List<SendMessage> getAll() {
+        final List<Message> messages = messageRepository.getAllSorted();
+        final List<SendMessage> sendMessages = Converter.fromMessageToSendMessage(messages);
+
+        return sendMessages;
+    }
+
+
+    /**
+     * Method for saving messages and notifications in db
+     *
+     * @param message {@link ReceivedMessage} the receivedMessage
+     * @param type    {@link MessageType}     the type
+     * @param type    {@link ProTipUser}      the user
+     */
+    private void saveMessage(final ReceivedMessage message, final MessageType type, final ProTipUser user) {
+        final String loggerInfo;
+
+        if (type.getName() == NOTIFICATION) {
+            loggerInfo = "New notification: ";
+        } else {
+            loggerInfo = "New message: ";
+        }
+
+        logger.info(loggerInfo + message.getMessage() + ", from " + user.getFirstName() + " " + user.getLastName());
+        messageRepository.save(new Message(user, message.getMessage(), new Date(), type));
+    }
+
+    /**
+     * Method for handling rabbitMQ messaging
+     */
+    private void rabbitMQMessage () {
+        // TODO: Work in progress
+
+        //template.convertAndSend("/topic/javainuse", message);
+        //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
     }
 }

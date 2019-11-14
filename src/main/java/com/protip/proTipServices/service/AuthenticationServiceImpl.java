@@ -35,8 +35,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     /**
      * Method for generating token from login data
      *
-     * @param login    {@link Login}    the login data
-     * @return {@link String}           the created token
+     * @param login {@link Login} the login data
+     * @return {@link String}     the created token
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      * @throws UserNotFoundException         the user not found exception
@@ -57,7 +57,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 loginRepository.findByUsername(login.getUsername()).getPassword());
         if (!passwordCorrect) throw new PasswordIncorrectException("Password " + login.getPassword() + " is wrong");
 
-        login.setRole(loginRepository.findByUsername(login.getUsername()).getRole());
+        user.setRole(loginRepository.findByUsername(login.getUsername()).getRole());
+
+        return JwtTokenUtil.generateToken(user, getProTipUser(user));
+    }
+
+    /**
+     * Method for updating token
+     *
+     * @param token {@link String} the old token
+     * @return {@link String}      the new created token
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws TokenExpiredException         the token expired exception
+     */
+    public String updateToken(final String token) throws GenericProTipServiceException, TokenExpiredException {
+        Objects.requireNonNull(token, TOKEN_NULL);
+
+        final String username = JwtTokenUtil.getUsernameFromToken(token);
+        final Login user = loginRepository.findByUsername(username);
+        user.setRole(loginRepository.findByUsername(username).getRole());
 
         return JwtTokenUtil.generateToken(user, getProTipUser(user));
     }
@@ -68,10 +86,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param token {@link String} the token
      * @return {@link ProTipUser}  the proTipUser
      */
-    public ProTipUser getProTipUser(final String token) {
+    public ProTipUser getProTipUser(final String token) throws UserNotFoundException{
         Objects.requireNonNull(token, TOKEN_NULL);
+
         final Claims claims = JwtTokenUtil.getAllClaimsFromToken(token);
-        final Login login = loginRepository.findByUsername(claims.getSubject());
+        final String username = claims.getSubject();
+        final Login login = loginRepository.findByUsername(username);
+
+        if (login == null) throw new UserNotFoundException("User " + username + " does not exist");
+
         final ProTipUser proTipUser = DbaUtil.initializeAndUnproxy(login.getUser());
 
         return proTipUser;
@@ -81,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * Method for getting {@link ProTipUser} from login data
      *
      * @param login {@link Login} the login data
-     * @return {@link ProTipUser}  the proTipUser
+     * @return {@link ProTipUser} the proTipUser
      */
     private ProTipUser getProTipUser(final Login login) throws GenericProTipServiceException, TokenExpiredException {
         final ProTipUser proTipUser = DbaUtil.initializeAndUnproxy(login.getUser());

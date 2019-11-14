@@ -41,6 +41,7 @@ public class stompController extends basicController {
     @MessageMapping("/chat.newUser")
     @SendTo("/topic/javainuse")
     public ResponseEntity<?> newUser(@Payload final Message message, final SimpMessageHeaderAccessor headerAccessor) {
+        // TODO: Work in progress
         //message.setMessageType(MessageType.MESSAGE);
         //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
         //headerAccessor.getSessionAttributes().put("username", message);

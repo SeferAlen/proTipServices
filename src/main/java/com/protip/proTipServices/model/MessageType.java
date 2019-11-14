@@ -25,8 +25,8 @@ public class MessageType {
     @NotNull
     @Column(name = "name")
     private String name;
-    @OneToMany(mappedBy = "messageType", cascade = CascadeType.ALL)
-    private Set<Message> type;
+    @OneToMany(mappedBy="messageType", cascade = CascadeType.ALL)
+    private Set<Message> messages;
 
     /**
      * Instantiates a new Message type.
@@ -68,23 +68,5 @@ public class MessageType {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Gets type.
-     *
-     * @return the type
-     */
-    public Set<Message> getType() {
-        return type;
-    }
-
-    /**
-     * Sets type.
-     *
-     * @param type the type
-     */
-    public void setType(Set<Message> type) {
-        this.type = type;
     }
 }

@@ -57,10 +57,9 @@ public class DBListener {
      * Method for seeding database table at application start
      */
     private void seedRoleTable() {
-
         final List<Role> roles = roleRepository.findAll();
 
-        if(roles == null || roles.size() <= 0) {
+        if (roles == null || roles.size() <= 0) {
             roleRepository.save(new Role(ROLE_ADMIN));
             roleRepository.save(new Role(ROLE_USER));
 
@@ -75,7 +74,7 @@ public class DBListener {
     private void seedMessageTypeTable() {
         final List<MessageType> messageTypes = messageTypeRepository.findAll();
 
-        if(messageTypes == null || messageTypes.size() <= 0) {
+        if (messageTypes == null || messageTypes.size() <= 0) {
             messageTypeRepository.save(new MessageType(MESSAGE_TYPE_MESSAGE));
             messageTypeRepository.save(new MessageType(MESSAGE_TYPE_NOTIFICATION));
 

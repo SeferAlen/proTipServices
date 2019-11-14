@@ -1,11 +1,15 @@
 package com.protip.proTipServices.model;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Class for receiving messages over http POST method
  */
 public class ReceivedMessage {
 
+    @NotNull
     private String message;
+    @NotNull
     private String messageType;
 
     /**

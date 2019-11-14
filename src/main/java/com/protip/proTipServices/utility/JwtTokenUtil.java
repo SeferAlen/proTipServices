@@ -51,7 +51,7 @@ public class JwtTokenUtil implements Serializable {
      * Method for getting expiration date from token claims
      *
      * @param token {@link String} the token
-     * @return {@link Date}      the expiration date
+     * @return {@link Date}        the expiration date
      */
     public static Date getExpirationDateFromToken(final String token) {
         Objects.requireNonNull(token, TOKEN_NULL);
@@ -64,7 +64,7 @@ public class JwtTokenUtil implements Serializable {
      *
      * @param token          {@link String}              the token
      * @param claimsResolver {@link Function<Claims, T>} the function
-     * @return {@link T} the claim
+     * @return {@link T}                                 the claim
      */
     public static <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
         Objects.requireNonNull(token, TOKEN_NULL);
@@ -78,7 +78,7 @@ public class JwtTokenUtil implements Serializable {
      * Method for getting all claims from token
      *
      * @param token {@link String} the token
-     * @return {@link Claims} the claims
+     * @return {@link Claims}      the claims
      */
     public static Claims getAllClaimsFromToken(final String token) {
         Objects.requireNonNull(token, TOKEN_NULL);
@@ -90,12 +90,12 @@ public class JwtTokenUtil implements Serializable {
      * Method for decoding token
      *
      * @param token {@link String} the token
-     * @return {@link Claims} the claims
+     * @return {@link Claims}      the claims
      */
     public static Claims decodeJWT(final String token) {
         Objects.requireNonNull(token, TOKEN_NULL);
 
-        Claims claims = Jwts.parser()
+        final Claims claims = Jwts.parser()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(jwtSecret))
                 .parseClaimsJws(token).getBody();
 
@@ -119,42 +119,20 @@ public class JwtTokenUtil implements Serializable {
      *
      * @param userLogin  {@link Login}      the login
      * @param proTipUser {@link ProTipUser} the proTipUser data
-     * @return {@link String} the token
+     * @return {@link String}               the token
      */
     public static String generateToken(final Login userLogin, final ProTipUser proTipUser) {
         Objects.requireNonNull(userLogin, LOGIN_NULL);
         Objects.requireNonNull(proTipUser, PRO_TIP_USER_NULL);
 
         final Date proTipUserValidityDate = proTipUser.getProTipUserValidityDate();
-        final String formatedDate = new SimpleDateFormat(DATE_FORMAT).format(proTipUserValidityDate);
+        final String formattedDate = new SimpleDateFormat(DATE_FORMAT).format(proTipUserValidityDate);
 
-        Map<String, Object> claims = new HashMap<>();
+        final Map<String, Object> claims = new HashMap<>();
         claims.put(CLAIM_ROLE, userLogin.getRole().getName());
-        claims.put(CLAIM_VALIDITY_DATE, formatedDate);
+        claims.put(CLAIM_VALIDITY_DATE, formattedDate);
 
         return doGenerateToken(claims, userLogin.getUsername());
-    }
-
-    /**
-     * Method for checking ProTipUser validity date from token
-     *
-     * @param token {@link String} the token
-     * @return {@link boolean}     the validity status
-     */
-    public static boolean checkProTipUserValidityDate(final String token) {
-        Objects.requireNonNull(token, TOKEN_NULL);
-
-        /// TODO: Work in progress
-        final Claims claims = decodeJWT(token);
-
-        final Date validityDate = (Date) claims.get(CLAIM_VALIDITY_DATE);
-        final Date now = new Date();
-        final String today = new SimpleDateFormat(DATE_FORMAT).format(now);
-        final Date nowFormated = new Date(today);
-        final Date expiration = getExpirationDateFromToken(token);
-        final String registerDateFormated = new SimpleDateFormat(DATE_FORMAT).format(expiration);
-
-        return true;
     }
 
     /**
@@ -172,8 +150,8 @@ public class JwtTokenUtil implements Serializable {
      * Method for token generation
      *
      * @param claims {@link Map<String, Object>} the claims
-     * @param subject {@link String} the token
-     * @return {@link String} the token with claims
+     * @param subject {@link String}             the token
+     * @return {@link String}                    the token with claims
      */
     private static String doGenerateToken(final Map<String, Object> claims, final String subject) {
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))

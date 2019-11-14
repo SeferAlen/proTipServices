@@ -41,7 +41,7 @@ public class WebSocketEventListener {
         final StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         final String username = (String) headerAccessor.getSessionAttributes().get(USERNAME);
 
-        if(username != null) {
+        if (username != null) {
             //Message chatMessage = new Message();
             //chatMessage.setMessageType(MessageType.MESSAGE);
             //chatMessage.setSender(username);

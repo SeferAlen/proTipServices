@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -28,6 +29,7 @@ import java.util.Objects;
 public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
     private static final HttpStatus HTTP_UNAUTHORIZED = HttpStatus.UNAUTHORIZED;
     private static final HttpStatus HTTP_BAD_REQUEST = HttpStatus.BAD_REQUEST;
+    protected static final HttpStatus HTTP_INTERNAL_ERROR = HttpStatus.INTERNAL_SERVER_ERROR;
     private static final String EXCEPTION_NULL = "Exception must not be null";
     private static final String EXCEPTION_UNEXPECTED = "Unexpected exception or error";
     private static final String VALIDATION_FAILED = "Validation failed";
@@ -45,10 +47,10 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling validation exception
      *
-     * @param ex {@link MethodArgumentNotValidException} throwned exception
-     * @param headers {@link HttpHeaders} http headers
-     * @param status {@link HttpStatus} http status
-     * @param request {@link WebRequest} web request
+     * @param ex {@link MethodArgumentNotValidException} the thrown exception
+     * @param headers {@link HttpHeaders}                the http headers
+     * @param status {@link HttpStatus}                  the http status
+     * @param request {@link WebRequest}                 the web request
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
@@ -65,7 +67,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling expired JWT exception
      *
-     * @param ex {@link ExpiredJwtException} throwned exception
+     * @param ex {@link ExpiredJwtException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(ExpiredJwtException.class)
@@ -80,7 +82,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling unsupported JWT exception
      *
-     * @param ex {@link UnsupportedJwtException} throwned exception
+     * @param ex {@link UnsupportedJwtException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(UnsupportedJwtException.class)
@@ -95,7 +97,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling malformed JWT exception
      *
-     * @param ex {@link MalformedJwtException} throwned exception
+     * @param ex {@link MalformedJwtException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(MalformedJwtException.class)
@@ -110,7 +112,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling signature JWT exception
      *
-     * @param ex {@link SignatureException} throwned exception
+     * @param ex {@link SignatureException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(SignatureException.class)
@@ -125,7 +127,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling illegal argument JWT exception
      *
-     * @param ex {@link IllegalArgumentException} throwned exception
+     * @param ex {@link IllegalArgumentException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(IllegalArgumentException.class)
@@ -140,7 +142,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling expired jwt exception
      *
-     * @param ex {@link TokenExpiredException} throwned exception
+     * @param ex {@link TokenExpiredException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(TokenExpiredException.class)
@@ -155,7 +157,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling incorrect password exception
      *
-     * @param ex {@link PasswordIncorrectException} throwned exception
+     * @param ex {@link PasswordIncorrectException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(PasswordIncorrectException.class)
@@ -170,7 +172,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     /**
      * Method for handling user not found exception
      *
-     * @param ex {@link UserNotFoundException} throwned exception
+     * @param ex {@link UserNotFoundException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(UserNotFoundException.class)
@@ -183,9 +185,24 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     /**
+     * Method for handling parsing exceptions
+     *
+     * @param ex {@link ParseException} the trowed exception
+     * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
+     */
+    @ExceptionHandler(ParseException.class)
+    protected ResponseEntity<Object> handleParseException(final ParseException ex) {
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
+
+        return new ResponseEntity<>(new ErrorDetails(new Date(), SERVICE_ERROR_MESSAGE, SERVICE_ERROR_DETAILS),
+                HTTP_INTERNAL_ERROR
+        );
+    }
+
+    /**
      * Method for handling various types of exceptions across application
      *
-     * @param ex {@link GenericProTipServiceException} throwned exception
+     * @param ex {@link GenericProTipServiceException} the trowed exception
      * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
      */
     @ExceptionHandler(GenericProTipServiceException.class)
@@ -195,7 +212,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         logger.error(EXCEPTION_UNEXPECTED + ex.getLocalizedMessage());
 
         return new ResponseEntity<>(new ErrorDetails(new Date(), SERVICE_ERROR_MESSAGE, SERVICE_ERROR_DETAILS),
-                HTTP_BAD_REQUEST
+                HTTP_INTERNAL_ERROR
         );
     }
 }
