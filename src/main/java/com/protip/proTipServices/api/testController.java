@@ -5,8 +5,11 @@ import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.model.Message;
 import com.protip.proTipServices.model.TokenSet;
+import com.protip.proTipServices.repository.MessageTypeRepository;
 import com.protip.proTipServices.service.AuthenticationService;
 import com.protip.proTipServices.service.AuthorizationService;
+import org.joda.time.Instant;
+import org.joda.time.Interval;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
 
 
 /**
@@ -29,6 +34,8 @@ public class testController extends basicController {
     private AuthenticationService authenticationService;
     @Autowired
     private AuthorizationService authorizationService;
+    @Autowired
+    MessageTypeRepository messageTypeRepository;
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -91,5 +98,20 @@ public class testController extends basicController {
         }
 
         return new ResponseEntity<>(message, HTTP_OK);
+    }
+
+    /**
+     * Test Caching
+     *
+     * @return        the response entity
+     */
+    @GetMapping(value = "testCaching")
+    public ResponseEntity<?> testCaching() {
+
+        Instant timeBefore = new Instant();
+        messageTypeRepository.findByName("MESSAGE");
+        Interval interval = new Interval(timeBefore, new Instant());
+
+        return new ResponseEntity<>("Time passed " + interval.toString(), HTTP_OK);
     }
 }

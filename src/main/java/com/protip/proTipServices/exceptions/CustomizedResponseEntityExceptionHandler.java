@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.constraints.Null;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Objects;
@@ -207,6 +208,23 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
      */
     @ExceptionHandler(GenericProTipServiceException.class)
     protected ResponseEntity<Object> handleGenericProTipServiceException(final GenericProTipServiceException ex) {
+        Objects.requireNonNull(ex, EXCEPTION_NULL);
+
+        logger.error(EXCEPTION_UNEXPECTED + ex.getLocalizedMessage());
+
+        return new ResponseEntity<>(new ErrorDetails(new Date(), SERVICE_ERROR_MESSAGE, SERVICE_ERROR_DETAILS),
+                HTTP_INTERNAL_ERROR
+        );
+    }
+
+    /**
+     * Method for handling null pointer exception (even though it would be better this method is never used)
+     *
+     * @param ex {@link GenericProTipServiceException} the trowed exception
+     * @return {@link ResponseEntity} with {@link ErrorDetails} as body and {@link HttpStatus} http status
+     */
+    @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity<Object> handleNullPointerException(final NullPointerException ex) {
         Objects.requireNonNull(ex, EXCEPTION_NULL);
 
         logger.error(EXCEPTION_UNEXPECTED + ex.getLocalizedMessage());

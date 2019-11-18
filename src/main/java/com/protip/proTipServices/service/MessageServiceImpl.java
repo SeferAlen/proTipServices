@@ -1,6 +1,7 @@
 package com.protip.proTipServices.service;
 
 import com.protip.proTipServices.api.msgController;
+import com.protip.proTipServices.config.Config;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
@@ -17,6 +18,7 @@ import com.protip.proTipServices.utility.MessageReceivedStatus;
 import com.protip.proTipServices.utility.ProTipValidityStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,12 @@ import java.util.Objects;
 @Service
 public class MessageServiceImpl implements MessageService {
     private static final String RECEIVED_MESSAGE_NULL = "Received message must not be null";
+    private static final String MESSAGE_TYPE_NULL = "Message type must not be null";
+    private static final String USER_NULL = "User must not be null";
+    private static final String ROLE_NULL = "Role must not be null";
     private static final String TOKEN_NULL = "Token must not be null";
+    private static final String NEW_MESSAGE = "New notification: ";
+    private static final String NEW_NOTIFICATION = "New message: ";
     private static final String MESSAGE = "MESSAGE";
     private static final String NOTIFICATION = "NOTIFICATION";
     private static final String ROLE_ADMIN = "ADMIN";
@@ -53,6 +60,8 @@ public class MessageServiceImpl implements MessageService {
     private MessageRepository messageRepository;
     @Autowired
     private MessageTypeRepository messageTypeRepository;
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     /**
      * Method for handling new message being posted
@@ -75,8 +84,13 @@ public class MessageServiceImpl implements MessageService {
         final ProTipUser proTipUser = authenticationService.getProTipUser(token);
         final MessageType messageType = messageTypeRepository.findByName(receivedMessage.getMessageType());
 
+        Objects.requireNonNull(userRole, ROLE_NULL);
+        Objects.requireNonNull(proTipUser, USER_NULL);
+        Objects.requireNonNull(messageType, MESSAGE_TYPE_NULL);
+
         if (userRole.getName().equals(ROLE_ADMIN)) {
             saveMessage(receivedMessage, messageType, proTipUser);
+            rabbitMQNotification(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
 
             return POSTED;
         } else {
@@ -84,10 +98,12 @@ public class MessageServiceImpl implements MessageService {
 
             if (proTipValidityStatusFromToken == STATUS_OK) {
                 saveMessage(receivedMessage, messageType, proTipUser);
+                rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
 
                 return POSTED;
             } else if (proTipValidityStatusFromToken == STATUS_NEED_UPDATE) {
                 saveMessage(receivedMessage, messageType, proTipUser);
+                rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
 
                 return POSTED_WITH_NEW_TOKEN;
             } else if (proTipValidityStatusFromToken == STATUS_EXPIRED) {
@@ -142,9 +158,9 @@ public class MessageServiceImpl implements MessageService {
         final String loggerInfo;
 
         if (type.getName() == NOTIFICATION) {
-            loggerInfo = "New notification: ";
+            loggerInfo = NEW_NOTIFICATION;
         } else {
-            loggerInfo = "New message: ";
+            loggerInfo = NEW_MESSAGE;
         }
 
         logger.info(loggerInfo + message.getMessage() + ", from " + user.getFirstName() + " " + user.getLastName());
@@ -154,10 +170,20 @@ public class MessageServiceImpl implements MessageService {
     /**
      * Method for handling rabbitMQ messaging
      */
-    private void rabbitMQMessage () {
+    private void rabbitMQMessage(final String message) {
         // TODO: Work in progress
 
         //template.convertAndSend("/topic/javainuse", message);
-        //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+        rabbitTemplate.convertAndSend(Config.getChatQueue(), message);
+    }
+
+    /**
+     * Method for handling rabbitMQ notifications
+     */
+    private void rabbitMQNotification(final String message) {
+        // TODO: Work in progress
+
+        //template.convertAndSend("/topic/javainuse", message);
+        rabbitTemplate.convertAndSend(Config.getNotificationQueueQueue(), message);
     }
 }
