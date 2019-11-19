@@ -27,7 +27,7 @@ public class loginController extends basicController {
     /**
      * Login endpoint for user login and token generation
      *
-     * @param login {@link Login}     the login data
+     * @param login {@link Login} the login data
      * @return {@link ResponseEntity} the response entity with body containing token and Http status
      */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
@@ -36,6 +36,7 @@ public class loginController extends basicController {
                                                                           GenericProTipServiceException,
                                                                           TokenExpiredException {
 
-        return new ResponseEntity<>(new TokenSet(authenticationService.loginAndGenerateToken(login)), HTTP_OK);
+        final TokenSet token = new TokenSet(authenticationService.loginAndGenerateToken(login));
+        return response(token, HTTP_OK);
     }
 }

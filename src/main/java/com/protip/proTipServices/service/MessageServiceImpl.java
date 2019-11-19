@@ -5,16 +5,11 @@ import com.protip.proTipServices.config.Config;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
-import com.protip.proTipServices.model.MessageType;
-import com.protip.proTipServices.model.ProTipUser;
-import com.protip.proTipServices.model.ReceivedMessage;
-import com.protip.proTipServices.model.SendMessage;
-import com.protip.proTipServices.model.Message;
-import com.protip.proTipServices.model.Role;
+import com.protip.proTipServices.model.*;
 import com.protip.proTipServices.repository.MessageRepository;
 import com.protip.proTipServices.repository.MessageTypeRepository;
 import com.protip.proTipServices.utility.Converter;
-import com.protip.proTipServices.utility.MessageReceivedStatus;
+import com.protip.proTipServices.utility.ProTipUserActionStatus;
 import com.protip.proTipServices.utility.ProTipValidityStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -43,10 +39,11 @@ public class MessageServiceImpl implements MessageService {
     private static final String NOTIFICATION = "NOTIFICATION";
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_USER = "USER";
-    private static final MessageReceivedStatus POSTED = MessageReceivedStatus.POSTED;
-    private static final MessageReceivedStatus POSTED_WITH_NEW_TOKEN = MessageReceivedStatus.POSTED_WITH_NEW_TOKEN;
-    private static final MessageReceivedStatus EXPIRED = MessageReceivedStatus.EXPIRED_PRO_TIP_VALIDITY;
-    private static final MessageReceivedStatus ERROR = MessageReceivedStatus.ERROR;
+    private static final ProTipUserActionStatus ADMIN = ProTipUserActionStatus.ADMIN;
+    private static final ProTipUserActionStatus OK = ProTipUserActionStatus.OK;
+    private static final ProTipUserActionStatus OK_WITH_NEW_TOKEN = ProTipUserActionStatus.OK_WITH_NEW_TOKEN;
+    private static final ProTipUserActionStatus EXPIRED = ProTipUserActionStatus.EXPIRED_PRO_TIP_VALIDITY;
+    private static final ProTipUserActionStatus ERROR = ProTipUserActionStatus.ERROR;
     private static final ProTipValidityStatus STATUS_OK = ProTipValidityStatus.OK;
     private static final ProTipValidityStatus STATUS_EXPIRED = ProTipValidityStatus.EXPIRED;
     private static final ProTipValidityStatus STATUS_NEED_UPDATE = ProTipValidityStatus.NEED_UPDATE;
@@ -68,12 +65,12 @@ public class MessageServiceImpl implements MessageService {
      *
      * @param receivedMessage {@link ReceivedMessage} the receivedMessage
      * @param token           {@link String}          the token
-     * @return {@link MessageReceivedStatus}          the status representing message posting result
+     * @return {@link ProTipUserActionStatus}         the status representing message posting result
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      */
-    public MessageReceivedStatus newMessage(final ReceivedMessage receivedMessage,
-                                            final String token) throws GenericProTipServiceException,
+    public ProTipUserActionStatus newMessage(final ReceivedMessage receivedMessage,
+                                             final String token) throws GenericProTipServiceException,
                                                                        TokenExpiredException,
                                                                        ParseException,
                                                                        UserNotFoundException {
@@ -88,25 +85,28 @@ public class MessageServiceImpl implements MessageService {
         Objects.requireNonNull(proTipUser, USER_NULL);
         Objects.requireNonNull(messageType, MESSAGE_TYPE_NULL);
 
-        if (userRole.getName().equals(ROLE_ADMIN)) {
+        final ProTipUserActionStatus userStatus = verifyUser(token, userRole);
+
+        if (userStatus == ADMIN) {
             saveMessage(receivedMessage, messageType, proTipUser);
-            rabbitMQNotification(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
-
-            return POSTED;
+            if (messageType.getName() == NOTIFICATION) {
+                rabbitMQNotification(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
+            } else {
+                rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
+            }
+            return OK;
         } else {
-            final ProTipValidityStatus proTipValidityStatusFromToken = authorizationService.checkProTipUserValidity(token);
-
-            if (proTipValidityStatusFromToken == STATUS_OK) {
+            if (userStatus == OK) {
                 saveMessage(receivedMessage, messageType, proTipUser);
                 rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
 
-                return POSTED;
-            } else if (proTipValidityStatusFromToken == STATUS_NEED_UPDATE) {
+                return OK;
+            } else if (userStatus == OK_WITH_NEW_TOKEN) {
                 saveMessage(receivedMessage, messageType, proTipUser);
                 rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
 
-                return POSTED_WITH_NEW_TOKEN;
-            } else if (proTipValidityStatusFromToken == STATUS_EXPIRED) {
+                return OK_WITH_NEW_TOKEN;
+            } else if (userStatus == EXPIRED) {
                 return EXPIRED;
             }
 
@@ -119,13 +119,13 @@ public class MessageServiceImpl implements MessageService {
      *
      * @param receivedMessage {@link ReceivedMessage} the receivedMessage
      * @param token           {@link String}          the token
-     * @return {@link MessageReceivedStatus}          the status representing notification posting result
+     * @return {@link ProTipUserActionStatus} the status representing notification posting result
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      */
-    public MessageReceivedStatus newNotification(final ReceivedMessage receivedMessage,
-                                                 final String token) throws GenericProTipServiceException,
-                                                                            TokenExpiredException {
+    public ProTipUserActionStatus newNotification(final ReceivedMessage receivedMessage,
+                                                  final String token) throws GenericProTipServiceException,
+                                                                             TokenExpiredException {
         Objects.requireNonNull(receivedMessage, RECEIVED_MESSAGE_NULL);
         Objects.requireNonNull(token, TOKEN_NULL);
 
@@ -139,13 +139,62 @@ public class MessageServiceImpl implements MessageService {
      *
      * @return {@link List<Message>} the List<Message> list of 30 latest messages
      */
-    public List<SendMessage> getAll() {
-        final List<Message> messages = messageRepository.getAllSorted();
-        final List<SendMessage> sendMessages = Converter.fromMessageToSendMessage(messages);
+    public GetMessages getAll(final String token) throws GenericProTipServiceException,
+                                                         TokenExpiredException,
+                                                         ParseException,
+                                                         UserNotFoundException {
+        Objects.requireNonNull(token, TOKEN_NULL);
 
-        return sendMessages;
+        final Role userRole = authorizationService.getRole(token);
+        final ProTipUser proTipUser = authenticationService.getProTipUser(token);
+
+        Objects.requireNonNull(userRole, ROLE_NULL);
+        Objects.requireNonNull(proTipUser, USER_NULL);
+
+        final ProTipUserActionStatus userStatus = verifyUser(token, userRole);
+
+        if (userStatus == ADMIN || userStatus == OK) {
+            final List<SendMessage> messages = Converter.fromMessageToSendMessage(messageRepository.getAllSorted());
+
+            return new GetMessages(messages, OK);
+        } else if (userStatus == OK_WITH_NEW_TOKEN) {
+            final List<SendMessage> messages = Converter.fromMessageToSendMessage(messageRepository.getAllSorted());
+
+            return new GetMessages(messages, OK_WITH_NEW_TOKEN);
+        } else if (userStatus == EXPIRED) {
+            return new GetMessages(new ArrayList<>(), EXPIRED);
+        } else return new GetMessages(new ArrayList<>(), ERROR);
     }
 
+    /**
+     * Method for checking user status in order to perform ProTipUser related actions
+     *
+     * @param token {@link String}  the token
+     * @param userRole {@link Role} the token
+     * @return {@link ProTipUserActionStatus} the status representing ProTipUser related actions
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws TokenExpiredException         the token expired exception
+     */
+    private ProTipUserActionStatus verifyUser(final String token,
+                                              final Role userRole) throws GenericProTipServiceException,
+                                                                                  TokenExpiredException,
+                                                                                  ParseException {
+
+        if (userRole.getName().equals(ROLE_ADMIN)) {
+            return ADMIN;
+        } else {
+            final ProTipValidityStatus proTipValidityStatusFromToken = authorizationService.checkProTipUserValidity(token);
+
+            if (proTipValidityStatusFromToken == STATUS_OK) {
+                return OK;
+            } else if (proTipValidityStatusFromToken == STATUS_NEED_UPDATE) {
+                return OK_WITH_NEW_TOKEN;
+            } else if (proTipValidityStatusFromToken == STATUS_EXPIRED) {
+                return EXPIRED;
+            }
+            return ERROR;
+        }
+    }
 
     /**
      * Method for saving messages and notifications in db

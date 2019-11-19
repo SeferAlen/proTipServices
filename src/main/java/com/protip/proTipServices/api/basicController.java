@@ -1,6 +1,7 @@
 package com.protip.proTipServices.api;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 /**
  * Abstract basic REST controller
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public abstract class basicController {
     protected static final HttpStatus HTTP_OK = HttpStatus.OK;
     protected static final HttpStatus HTTP_CREATED = HttpStatus.CREATED;
+    protected static final HttpStatus HTTP_ACCEPTED = HttpStatus.ACCEPTED;
     protected static final HttpStatus HTTP_BAD_REQUEST = HttpStatus.BAD_REQUEST;
     protected static final HttpStatus HTTP_UNAUTHORIZED = HttpStatus.UNAUTHORIZED;
     protected static final HttpStatus HTTP_INTERNAL_ERROR = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -16,7 +18,13 @@ public abstract class basicController {
     protected static final String ROLE_USER = "USER";
     protected static final String ROLE_ADMIN = "ADMIN";
     protected static final String DATE_FORMAT = "yyyy-MM-dd";
+    protected static final String EMPTY_STRING = "";
     protected static final String EMPTY_SPACE = " ";
     protected static final String SERVICE_ERROR_MESSAGE = "Service error";
     protected static final String SERVICE_ERROR_DETAILS = "Please contact us with about this";
+
+    protected <T> ResponseEntity<?> response(final T body, final HttpStatus statusCode) {
+
+        return new ResponseEntity<>(body, statusCode);
+    }
 }

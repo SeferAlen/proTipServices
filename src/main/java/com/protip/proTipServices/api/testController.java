@@ -29,6 +29,7 @@ import java.util.Date;
 @RequestMapping(value = "/test")
 public class testController extends basicController {
     private static final String TEST_SENDER = "Alen";
+    private static final String MESSAGE = "MESSAGE";
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -58,7 +59,7 @@ public class testController extends basicController {
             message = USER_UNAUTHORIZED;
         }
 
-        return new ResponseEntity<>(message, HTTP_OK);
+        return response(message, HTTP_OK);
     }
 
     /**
@@ -79,7 +80,7 @@ public class testController extends basicController {
             message = USER_UNAUTHORIZED;
         }
 
-        return new ResponseEntity<>(message, HTTP_OK);
+        return response(message, HTTP_OK);
     }
 
     /**
@@ -97,7 +98,7 @@ public class testController extends basicController {
             rabbitTemplate.convertAndSend(Config.getChatQueue(), message.getMessage());
         }
 
-        return new ResponseEntity<>(message, HTTP_OK);
+        return response(message, HTTP_OK);
     }
 
     /**
@@ -109,9 +110,9 @@ public class testController extends basicController {
     public ResponseEntity<?> testCaching() {
 
         Instant timeBefore = new Instant();
-        messageTypeRepository.findByName("MESSAGE");
+        messageTypeRepository.findByName(MESSAGE);
         Interval interval = new Interval(timeBefore, new Instant());
 
-        return new ResponseEntity<>("Time passed " + interval.toString(), HTTP_OK);
+        return response("Time passed " + interval.toString(), HTTP_OK);
     }
 }

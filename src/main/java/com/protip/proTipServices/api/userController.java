@@ -57,7 +57,7 @@ public class userController extends basicController{
 
         authorizationService.authorizeUser(tokenSet.getToken());
 
-        return new ResponseEntity<>(userService.getUsers(), HTTP_OK);
+        return response(userService.getUsers(), HTTP_OK);
     }
 
     /**
@@ -72,17 +72,17 @@ public class userController extends basicController{
                 + register.getProTipUser().getLastName());
 
         if (!checkDateValidity(register.getProTipUser().getProTipUserValidityDate()))
-            return new ResponseEntity<>(INVALID_VALIDITY_DATE, HTTP_BAD_REQUEST);
+            return response(INVALID_VALIDITY_DATE, HTTP_BAD_REQUEST);
 
         final UserCreateStatus userCreateStatus = userService.createUser(register.getProTipUser(),
                                                                          register.getPassword(),
                                                                          roleRepository.findByName(ROLE_USER));
         if (userCreateStatus == USER_ALREADY_EXIST) {
-            return new ResponseEntity<>(EMAIL_ALREADY_EXIST, HTTP_BAD_REQUEST);
+            return response(EMAIL_ALREADY_EXIST, HTTP_BAD_REQUEST);
         } else if (userCreateStatus == USER_CREATED) {
-            return new ResponseEntity<>(CREATED, HTTP_CREATED);
+            return response(CREATED, HTTP_CREATED);
         } else {
-            return new ResponseEntity<>(CREATE_ERROR, HTTP_BAD_REQUEST);
+            return response(CREATE_ERROR, HTTP_BAD_REQUEST);
         }
     }
 
