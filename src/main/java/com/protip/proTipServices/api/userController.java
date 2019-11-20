@@ -48,8 +48,9 @@ public class userController extends basicController{
      * Get all users from database endpoint
      *
      * @param tokenSet {@link TokenSet} the tokenSet containing token
-     * @return {@link ResponseEntity}   the users
-     * @throws {@link GenericProTipServiceException}, {@link TokenExpiredException} exceptions
+     * @return {@link ResponseEntity} the response entity with body containing users and Http status
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws TokenExpiredException         the token expired exception
      */
     @GetMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> getUsers(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException,
@@ -64,12 +65,11 @@ public class userController extends basicController{
      * Register new user endpoint
      *
      * @param register {@link Register} the register containing user info and password
-     * @return {@link ResponseEntity}   the response entity with body with message status and Http status
+     * @return {@link ResponseEntity} the response entity with body with message status and Http status
      */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> postUser(@Valid @RequestBody final Register register) {
-        logger.info("User registering : " + register.getProTipUser().getFirstName() + " "
-                + register.getProTipUser().getLastName());
+        logger.info("User registering : " + register.getProTipUser().getFirstName() + " " + register.getProTipUser().getLastName());
 
         if (!checkDateValidity(register.getProTipUser().getProTipUserValidityDate()))
             return response(INVALID_VALIDITY_DATE, HTTP_BAD_REQUEST);
@@ -90,7 +90,7 @@ public class userController extends basicController{
      * Check validity date sent by user trying to register in order to prevent date manipulation at frontend
      *
      * @param registerDate {@link Date} the registerDate sent from user
-     * @return {@link boolean}          representing validity status
+     * @return {@link boolean} the boolean representing validity status
      */
     private boolean checkDateValidity(final Date registerDate) {
         final Date now = new Date();

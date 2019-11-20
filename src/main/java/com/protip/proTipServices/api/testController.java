@@ -30,6 +30,7 @@ import java.util.Date;
 public class testController extends basicController {
     private static final String TEST_SENDER = "Alen";
     private static final String MESSAGE = "MESSAGE";
+    private static final String TIME_INTERVAL = "Time intervals: ";
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -43,13 +44,14 @@ public class testController extends basicController {
     /**
      * Test user authorization endpoint
      *
-     * @param tokenSet the token set
-     * @return         the response entity
+     * @param tokenSet {@link TokenSet} the token set
+     * @return {@link ResponseEntity} the response entity with body containing messages and Http status
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws TokenExpiredException         the token expired exception
      */
     @GetMapping(value = "authUser")
     public ResponseEntity<?> testUserAuthorization(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException,
                                                                                                 TokenExpiredException {
-
         final Boolean userOk = authorizationService.authorizeUser(tokenSet.getToken());
         final String message;
 
@@ -65,8 +67,10 @@ public class testController extends basicController {
     /**
      * Test admin authorization endpoint
      *
-     * @param tokenSet the token set
-     * @return         the response entity
+     * @param tokenSet {@link TokenSet} the token set
+     * @return {@link ResponseEntity} the response entity with body containing messages and Http status
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws TokenExpiredException         the token expired exception
      */
     @GetMapping(value = "authAdmin")
     public ResponseEntity<?> testAdminAuthorization(@RequestBody final TokenSet tokenSet) throws GenericProTipServiceException,
@@ -86,8 +90,8 @@ public class testController extends basicController {
     /**
      * Test RabbitMQ message sending endpoint
      *
-     * @param message the message
-     * @return        the response entity
+     * @param message {@link String} the message
+     * @return {@link ResponseEntity} the response entity with body containing messages and Http status
      */
     @PostMapping(value = "sendMessage")
     public ResponseEntity<?> testAdminAuthorization(@RequestBody final Message message) {
@@ -104,15 +108,15 @@ public class testController extends basicController {
     /**
      * Test Caching
      *
-     * @return        the response entity
+     * @return {@link ResponseEntity} the response entity with body containing two time intervals and Http status
      */
     @GetMapping(value = "testCaching")
     public ResponseEntity<?> testCaching() {
-
         Instant timeBefore = new Instant();
+
         messageTypeRepository.findByName(MESSAGE);
         Interval interval = new Interval(timeBefore, new Instant());
 
-        return response("Time passed " + interval.toString(), HTTP_OK);
+        return response(TIME_INTERVAL + interval.toString(), HTTP_OK);
     }
 }

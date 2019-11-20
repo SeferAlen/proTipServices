@@ -52,15 +52,16 @@ public class msgController extends basicController {
      * @param message {@link String} the message
      * @return {@link ResponseEntity} the response entity with body containing message and Http status
      * @throws GenericProTipServiceException the generic proTipService exception
-     * @throws TokenExpiredException         the token expired exception
      * @throws UserNotFoundException         the user not found exception
      * @throws PasswordIncorrectException    the token expired exception
+     * @throws TokenExpiredException         the token expired exception
+     * @throws ParseException                the parsing exception
      */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> receivedMessage(@RequestHeader("Authorization") final String auth,
-                                             @Valid @RequestBody final ReceivedMessage message) throws UserNotFoundException,
+                                             @Valid @RequestBody final ReceivedMessage message) throws GenericProTipServiceException,
+                                                                                                UserNotFoundException,
                                                                                                 PasswordIncorrectException,
-                                                                                                GenericProTipServiceException,
                                                                                                 TokenExpiredException,
                                                                                                 ParseException {
         final String token = auth.substring(auth.indexOf(EMPTY_SPACE));
@@ -73,44 +74,46 @@ public class msgController extends basicController {
         } else if (proTipUserActionStatus == EXPIRED) {
             return response(PRO_TIP_USER_EXPIRED, HTTP_BAD_REQUEST);
         } else {
-            return response(SERVICE_ERROR_MESSAGE + ". " + SERVICE_ERROR_DETAILS, HTTP_INTERNAL_ERROR);
+            return response(SERVICE_ERROR_MESSAGE + NEW_SENTENCE + SERVICE_ERROR_DETAILS, HTTP_INTERNAL_ERROR);
         }
     }
 
     /**
      * Get latest chat messages endpoint
      *
+     * @param auth {@link String} the auth header containing token
      * @return {@link ResponseEntity} the response entity with body containing messages and Http status
      * @throws GenericProTipServiceException the generic proTipService exception
-     * @throws TokenExpiredException      the token expired exception
-     * @throws UserNotFoundException      the user not found exception
-     * @throws PasswordIncorrectException the password incorrect exception
+     * @throws UserNotFoundException         the user not found exception
+     * @throws PasswordIncorrectException    the token expired exception
+     * @throws TokenExpiredException         the token expired exception
+     * @throws ParseException                the parsing exception
      */
     @GetMapping(value = "/messages", produces = "application/json")
-    public ResponseEntity<?> getAllMessages(@RequestHeader("Authorization") final String auth) throws TokenExpiredException,
-                                                                                                      GenericProTipServiceException,
+    public ResponseEntity<?> getAllMessages(@RequestHeader("Authorization") final String auth) throws GenericProTipServiceException,
                                                                                                       UserNotFoundException,
-                                                                                                      ParseException,
-                                                                                                      PasswordIncorrectException {
+                                                                                                      PasswordIncorrectException,
+                                                                                                      TokenExpiredException,
+                                                                                                      ParseException {
         final String token = auth.substring(auth.indexOf(EMPTY_SPACE));
         final GetMessages messages = messageService.getAll(token);
         final ProTipUserActionStatus proTipUserActionStatus = messages.getUserStatus();
         final GetMessagesResponse getMessagesResponse = new GetMessagesResponse();
-        String updatedToken = EMPTY_STRING;
-        getMessagesResponse.setToken(updatedToken);
 
         if (proTipUserActionStatus == OK) {
             getMessagesResponse.setMessages(messages.getMessages());
+            getMessagesResponse.setToken(EMPTY_STRING);
+
             return response(getMessagesResponse, HTTP_OK);
         } else if (proTipUserActionStatus == OK_WITH_NEW_TOKEN) {
-            updatedToken = authenticationService.updateToken(token);
             getMessagesResponse.setMessages(messages.getMessages());
-            getMessagesResponse.setToken(updatedToken);
+            getMessagesResponse.setToken(authenticationService.updateToken(token));
+
             return response(getMessagesResponse, HTTP_ACCEPTED);
         } else if (proTipUserActionStatus == EXPIRED) {
             return response(PRO_TIP_USER_EXPIRED, HTTP_BAD_REQUEST);
         } else {
-            return response(SERVICE_ERROR_MESSAGE + ". " + SERVICE_ERROR_DETAILS, HTTP_INTERNAL_ERROR);
+            return response(SERVICE_ERROR_MESSAGE + NEW_SENTENCE + SERVICE_ERROR_DETAILS, HTTP_INTERNAL_ERROR);
         }
     }
 }

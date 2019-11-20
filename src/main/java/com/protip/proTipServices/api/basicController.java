@@ -21,6 +21,7 @@ public abstract class basicController {
     protected static final String EMPTY_STRING = "";
     protected static final String EMPTY_SPACE = " ";
     protected static final String SERVICE_ERROR_MESSAGE = "Service error";
+    protected static final String NEW_SENTENCE = ". ";
     protected static final String SERVICE_ERROR_DETAILS = "Please contact us with about this";
 
     protected <T> ResponseEntity<?> response(final T body, final HttpStatus statusCode) {

@@ -3,6 +3,7 @@ package com.protip.proTipServices.config;
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * Class for app configuration
  */
 @Configuration
+@EnableScheduling
 public class Config {
     private static final String CHAT_QUEUE = "proTipServicesQueueChat";
     private static final String NOTIFICATION_QUEUE = "proTipServicesQueueNotification";

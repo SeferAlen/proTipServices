@@ -3,6 +3,7 @@ package com.protip.proTipServices.listeners;
 import com.protip.proTipServices.model.MessageType;
 import com.protip.proTipServices.model.ProTipUser;
 import com.protip.proTipServices.model.Role;
+import com.protip.proTipServices.repository.MessageRepository;
 import com.protip.proTipServices.repository.MessageTypeRepository;
 import com.protip.proTipServices.repository.RoleRepository;
 import com.protip.proTipServices.service.UserService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -38,6 +40,8 @@ public class DBListener {
     private MessageTypeRepository messageTypeRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MessageRepository messageRepository;
     @Value("${default.user.password}")
     private String defaultPassword;
 
@@ -51,6 +55,15 @@ public class DBListener {
         seedRoleTable();
         seedMessageTypeTable();
         createDefaultAdminUser();
+    }
+
+    /**
+     * Delete not-last 30 messages in Db
+     *
+     */
+    @Scheduled(cron = "0 0/30 17 * * *")
+    public void deleteDBMessages() {
+        messageRepository.deleteAll();
     }
 
     /**

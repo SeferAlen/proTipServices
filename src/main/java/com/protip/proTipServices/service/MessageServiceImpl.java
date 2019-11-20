@@ -5,7 +5,13 @@ import com.protip.proTipServices.config.Config;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.exceptions.UserNotFoundException;
-import com.protip.proTipServices.model.*;
+import com.protip.proTipServices.model.ProTipUser;
+import com.protip.proTipServices.model.Message;
+import com.protip.proTipServices.model.ReceivedMessage;
+import com.protip.proTipServices.model.SendMessage;
+import com.protip.proTipServices.model.GetMessages;
+import com.protip.proTipServices.model.MessageType;
+import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.MessageRepository;
 import com.protip.proTipServices.repository.MessageTypeRepository;
 import com.protip.proTipServices.utility.Converter;
@@ -39,6 +45,8 @@ public class MessageServiceImpl implements MessageService {
     private static final String NOTIFICATION = "NOTIFICATION";
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_USER = "USER";
+    private static final String EMPTY_SPACE = "USER";
+    private static final String DOUBLE_DOT = ": ";
     private static final ProTipUserActionStatus ADMIN = ProTipUserActionStatus.ADMIN;
     private static final ProTipUserActionStatus OK = ProTipUserActionStatus.OK;
     private static final ProTipUserActionStatus OK_WITH_NEW_TOKEN = ProTipUserActionStatus.OK_WITH_NEW_TOKEN;
@@ -90,20 +98,20 @@ public class MessageServiceImpl implements MessageService {
         if (userStatus == ADMIN) {
             saveMessage(receivedMessage, messageType, proTipUser);
             if (messageType.getName() == NOTIFICATION) {
-                rabbitMQNotification(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
+                rabbitMQNotification(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
             } else {
-                rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
+                rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
             }
             return OK;
         } else {
             if (userStatus == OK) {
                 saveMessage(receivedMessage, messageType, proTipUser);
-                rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
+                rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
 
                 return OK;
             } else if (userStatus == OK_WITH_NEW_TOKEN) {
                 saveMessage(receivedMessage, messageType, proTipUser);
-                rabbitMQMessage(proTipUser.getFirstName() + " " + proTipUser.getLastName() + ": " + receivedMessage.getMessage());
+                rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
 
                 return OK_WITH_NEW_TOKEN;
             } else if (userStatus == EXPIRED) {

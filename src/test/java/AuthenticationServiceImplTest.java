@@ -4,6 +4,7 @@ import com.protip.proTipServices.exceptions.UserNotFoundException;
 import com.protip.proTipServices.model.Login;
 import com.protip.proTipServices.repository.LoginRepository;
 import com.protip.proTipServices.service.AuthenticationService;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -48,12 +49,12 @@ public class AuthenticationServiceImplTest {
         Assertions.assertThrows(NullPointerException.class, () -> authenticationService.loginAndGenerateToken(null));
         Mockito.when(loginRepository.findByUsername(email)).thenReturn(null);
         Assertions.assertThrows(UserNotFoundException.class, () -> authenticationService.loginAndGenerateToken(login));
-        Assertions.assertThrows(UserNotFoundException.class, () -> authenticationService.getProTipUser(testToken));
+        Assertions.assertThrows(ExpiredJwtException.class, () -> authenticationService.getProTipUser(testToken));
         Mockito.when(loginRepository.findByUsername(email)).thenReturn(login);
         Mockito.when(passwordEncoder.matches(password, login.getPassword())).thenReturn(false);
         Assertions.assertThrows(PasswordIncorrectException.class, () -> authenticationService.loginAndGenerateToken(login));
 
-        verify(loginRepository, times(4)).findByUsername(email);
+        verify(loginRepository, times(3)).findByUsername(email);
         verify(passwordEncoder, times(1)).matches(password, password);
     }
 }
