@@ -48,7 +48,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * Method for user authorization
      *
      * @param token {@link String} the token
-     * @return {@link boolean}     the boolean representing authorization result
+     * @return {@link boolean} the boolean representing authorization result
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      */
@@ -68,7 +68,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * Method for admin authorization
      *
      * @param token {@link String} the token
-     * @return {@link boolean}     the boolean representing authorization result
+     * @return {@link boolean} the boolean representing authorization result
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      */
@@ -87,7 +87,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     /**
      * Method for checking validity of proTipUserValidity field in token
      *
-     * @param token {@link String}          the token
+     * @param token {@link String} the token
      * @return {@link ProTipValidityStatus} the status of ProTipUser
      */
     public ProTipValidityStatus checkProTipUserValidity(final String token) throws ParseException {
@@ -119,7 +119,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * Public method for getting user role from token
      *
      * @param token {@link String} the token
-     * @return {@link Role}        the role
+     * @return {@link Role} the role
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      */
@@ -133,7 +133,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
      * Method for getting user role from token
      *
      * @param token {@link String} the token
-     * @return {@link Role}        the role
+     * @return {@link Role} the role
      * @throws GenericProTipServiceException the generic proTipService exception
      * @throws TokenExpiredException         the token expired exception
      */

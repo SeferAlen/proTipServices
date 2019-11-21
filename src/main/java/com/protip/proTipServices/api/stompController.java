@@ -28,7 +28,7 @@ public class stompController extends basicController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/javainuse")
     public ResponseEntity<?> sendMessage(@Payload final Message message) {
-        return new ResponseEntity<>(message, HTTP_OK);
+        return response(message, HTTP_OK);
     }
 
     /**
@@ -45,6 +45,6 @@ public class stompController extends basicController {
         //message.setMessageType(MessageType.MESSAGE);
         //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
         //headerAccessor.getSessionAttributes().put("username", message);
-        return new ResponseEntity<>(message, HTTP_OK);
+        return response(message, HTTP_OK);
     }
 }

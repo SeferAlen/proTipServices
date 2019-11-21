@@ -5,7 +5,6 @@ import com.protip.proTipServices.model.Role;
 import com.protip.proTipServices.repository.LoginRepository;
 import com.protip.proTipServices.repository.UserRepository;
 import com.protip.proTipServices.service.UserService;
-import com.protip.proTipServices.service.UserServiceImpl;
 import com.protip.proTipServices.utility.UserCreateStatus;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,15 +13,19 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+
+/**
+ * Unit tests for UserService
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ProTipServicesApplication.class)
 public class UserServiceImplTest {
@@ -42,22 +45,12 @@ public class UserServiceImplTest {
     final Login login1 = new Login(proTipUser1.getEmail(), test, proTipUser1, new Role(test));
     final List<ProTipUser> users = new ArrayList<>();
 
-    @TestConfiguration
-    static class EmployeeServiceImplTestContextConfiguration {
-        @Bean
-        public UserService employeeService() {
-            return new UserServiceImpl();
-        }
-    }
-
     @Autowired
     private UserService userService;
-
     @MockBean
-    LoginRepository loginRepository;
-
+    private LoginRepository loginRepository;
     @MockBean
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Before
     public void setUp() {
@@ -69,21 +62,36 @@ public class UserServiceImplTest {
         Mockito.when(userRepository.findAll()).thenReturn(users);
     }
 
+    /**
+     * Test get users.
+     */
     @Test
     public void testGetUsers() {
         Assert.assertEquals(2, userService.getUsers().size());
+
+        verify(userRepository, times(2)).findAll();
     }
 
+    /**
+     * Test find by username.
+     */
     @Test
     public void testFindByUsername() {
         Assert.assertEquals(login1, userService.findByUsername(email1));
+
+        verify(loginRepository, times(1)).findByUsername(email1);
     }
 
+    /**
+     * Test create user.
+     */
     @Test
     public void testCreateUser() {
         Assert.assertEquals(UserCreateStatus.ALREADY_EXIST, userService.createUser(proTipUser1, test, new Role(test)));
         final ProTipUser testUser = new ProTipUser(firstName3, lastName3, email3, new Date(), new Date());
 
         Assert.assertEquals(UserCreateStatus.CREATED, userService.createUser(testUser, test, new Role(test)));
+
+        verify(userRepository, times(2)).findAll();
     }
 }

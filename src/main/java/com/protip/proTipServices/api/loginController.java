@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 /**
  * REST controller for accessing user login data in database
  */
@@ -27,15 +29,20 @@ public class loginController extends basicController {
     /**
      * Login endpoint for user login and token generation
      *
-     * @param login {@link Login}     the login data
+     * @param login {@link Login} the login data
      * @return {@link ResponseEntity} the response entity with body containing token and Http status
+     * @throws GenericProTipServiceException the generic proTipService exception
+     * @throws UserNotFoundException         the user not found exception
+     * @throws PasswordIncorrectException    the token expired exception
+     * @throws TokenExpiredException         the token expired exception
      */
     @PostMapping(value = "", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> login(@RequestBody final Login login) throws UserNotFoundException,
                                                                           PasswordIncorrectException,
                                                                           GenericProTipServiceException,
                                                                           TokenExpiredException {
+        final TokenSet token = new TokenSet(authenticationService.loginAndGenerateToken(login));
 
-        return new ResponseEntity<>(new TokenSet(authenticationService.loginAndGenerateToken(login)), HTTP_OK);
+        return response(token, HTTP_OK);
     }
 }
