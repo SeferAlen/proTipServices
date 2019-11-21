@@ -58,12 +58,21 @@ public class DBListener {
     }
 
     /**
-     * Delete not-last 30 messages in Db
+     * Delete not-last 30 messages in Db at midnight
      *
      */
-    @Scheduled(cron = "0 0/30 17 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void deleteDBMessages() {
-        messageRepository.deleteAll();
+        messageRepository.deleteOlderMessages(MESSAGE_TYPE_MESSAGE);
+    }
+
+    /**
+     * Delete not-last 30 notifications in Db at midnight
+     *
+     */
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteDBNotifications() {
+        messageRepository.deleteOlderMessages(MESSAGE_TYPE_NOTIFICATION);
     }
 
     /**
