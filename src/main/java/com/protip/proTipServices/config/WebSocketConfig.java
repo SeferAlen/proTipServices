@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final String DESTINATION_PREFIX = "/topic";
     private static final String STOMP_ENDPOINT = "/proTipServicesWebSocket";
     private static final String ORIGINS_ALL = "*";
-    private static final String HOST = System.getenv("CLOUDAMQP_URL");
+    private static final String HOST = "amqp://guest:guest@localhost";
     private static final String CLIENT_LOGIN = "guest";
     private static final String CLIENT_PASSWORD = "guest";
     private static final int PORT = 61613;

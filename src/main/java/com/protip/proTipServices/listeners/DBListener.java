@@ -90,7 +90,7 @@ public class DBListener {
         try {
             final Date date = new SimpleDateFormat(DATE_PARSE_FORMAT).parse(DATE);
 
-            final ProTipUser defaultUser = new ProTipUser(DEFAULT_USER_FIRST_NAME,DEFAULT_USER_LAST_NAME,DEFAULT_USER_EMAIL, date, new Date());
+            final ProTipUser defaultUser = new ProTipUser(DEFAULT_USER_FIRST_NAME, DEFAULT_USER_LAST_NAME, DEFAULT_USER_EMAIL, date, new Date());
             final Role defaultUserRole = roleRepository.findByName(ROLE_ADMIN);
 
             userService.createUser(defaultUser, defaultPassword, defaultUserRole);
