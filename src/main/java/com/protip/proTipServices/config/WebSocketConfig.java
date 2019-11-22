@@ -1,5 +1,6 @@
 package com.protip.proTipServices.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -16,10 +17,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final String DESTINATION_PREFIX = "/topic";
     private static final String STOMP_ENDPOINT = "/proTipServicesWebSocket";
     private static final String ORIGINS_ALL = "*";
-    private static final String HOST = "amqp://guest:guest@localhost";
-    private static final String CLIENT_LOGIN = "guest";
-    private static final String CLIENT_PASSWORD = "guest";
-    private static final int PORT = 61613;
+
+    @Value("${rabbitmq.url}")
+    private static String HOST ;
+
+    private static String CLIENT_LOGIN;
+
+
+    private static String CLIENT_PASSWORD;
+
+
+    private static int PORT = 61613;
 
     /**
      * Method for message broker configuration
