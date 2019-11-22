@@ -17,6 +17,7 @@ import com.protip.proTipServices.utility.MessageReceivedStatus;
 import com.protip.proTipServices.utility.ProTipValidityStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +54,8 @@ public class MessageServiceImpl implements MessageService {
     private MessageRepository messageRepository;
     @Autowired
     private MessageTypeRepository messageTypeRepository;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     /**
      * Method for handling new message being posted
@@ -77,6 +80,7 @@ public class MessageServiceImpl implements MessageService {
 
         if (userRole.getName().equals(ROLE_ADMIN)) {
             saveMessage(receivedMessage, messageType, proTipUser);
+            rabbitMQMessage(messageType);
 
             return POSTED;
         } else {
@@ -84,10 +88,12 @@ public class MessageServiceImpl implements MessageService {
 
             if (proTipValidityStatusFromToken == STATUS_OK) {
                 saveMessage(receivedMessage, messageType, proTipUser);
+                rabbitMQMessage(messageType);
 
                 return POSTED;
             } else if (proTipValidityStatusFromToken == STATUS_NEED_UPDATE) {
                 saveMessage(receivedMessage, messageType, proTipUser);
+                rabbitMQMessage(messageType);
 
                 return POSTED_WITH_NEW_TOKEN;
             } else if (proTipValidityStatusFromToken == STATUS_EXPIRED) {
@@ -154,10 +160,10 @@ public class MessageServiceImpl implements MessageService {
     /**
      * Method for handling rabbitMQ messaging
      */
-    private void rabbitMQMessage () {
+    private void rabbitMQMessage (final MessageType messageType) {
         // TODO: Work in progress
 
         //template.convertAndSend("/topic/javainuse", message);
-        //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+        rabbitTemplate.convertAndSend("proTipServicesQueueChat", messageType.getName());
     }
 }
