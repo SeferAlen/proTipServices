@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final String ORIGINS_ALL = "*";
 
     @Value("${rabbitmq.url}")
-    private String HOST ;
+    private String HOST;
 
     @Value("${rabbitmq.user}")
     private String CLIENT_LOGIN;
@@ -27,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${rabbitmq.password}")
     private String CLIENT_PASSWORD;
 
-    @Value("${rabbitmq.port}")
+    @Value("${rabbitmq.stomp.port}")
     private int PORT;
 
     /**

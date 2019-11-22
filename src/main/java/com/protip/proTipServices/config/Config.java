@@ -1,10 +1,16 @@
 package com.protip.proTipServices.config;
 
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Class for app configuration
@@ -13,6 +19,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class Config {
     private static final String CHAT_QUEUE = "proTipServicesQueueChat";
     private static final String NOTIFICATION_QUEUE = "proTipServicesQueueNotification";
+
+    @Value("${rabbitmq.url}")
+    private String HOST;
+
+    @Value("${rabbitmq.user}")
+    private String CLIENT_LOGIN;
+
+    @Value("${rabbitmq.password}")
+    private String CLIENT_PASSWORD;
+
+    @Value("${rabbitmq.port}")
+    private int PORT;
 
     /**
      * Bean for PasswordEncoder
@@ -60,5 +78,18 @@ public class Config {
      */
     public static String getNotificationQueueQueue() {
         return NOTIFICATION_QUEUE;
+    }
+
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        final CachingConnectionFactory factory = new CachingConnectionFactory();
+
+        factory.setUsername(CLIENT_LOGIN);
+        factory.setPassword(CLIENT_PASSWORD);
+        factory.setHost(HOST);
+        factory.setPort(PORT);
+        factory.setVirtualHost("/");
+
+        return factory;
     }
 }
