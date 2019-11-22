@@ -7,6 +7,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.net.URISyntaxException;
+import java.net.URL;
+
 /**
  * Class for Web socket configuration
  */
@@ -36,9 +39,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
+        final URL url;
+        try {
+            url = new URL(HOST);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         registry.setApplicationDestinationPrefixes(APP_DESTINATION_PREFIX);
         registry.enableStompBrokerRelay(DESTINATION_PREFIX)
-                .setRelayHost(HOST)
+                .setRelayHost(url.getHost())
                 .setRelayPort(PORT)
                 .setClientLogin(CLIENT_LOGIN)
                 .setClientPasscode(CLIENT_PASSWORD);
