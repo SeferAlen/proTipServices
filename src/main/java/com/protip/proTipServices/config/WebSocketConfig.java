@@ -19,16 +19,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private static final String ORIGINS_ALL = "*";
 
     @Value("${rabbitmq.url}")
-    private static String HOST ;
+    private String HOST ;
 
     @Value("${rabbitmq.user}")
-    private static String CLIENT_LOGIN;
+    private String CLIENT_LOGIN;
 
     @Value("${rabbitmq.password}")
-    private static String CLIENT_PASSWORD;
+    private String CLIENT_PASSWORD;
 
     @Value("${rabbitmq.port}")
-    private static int PORT = 61613;
+    private int PORT;
 
     /**
      * Method for message broker configuration
