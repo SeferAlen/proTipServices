@@ -21,12 +21,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${rabbitmq.url}")
     private static String HOST ;
 
+    @Value("${rabbitmq.user}")
     private static String CLIENT_LOGIN;
 
-
+    @Value("${rabbitmq.password}")
     private static String CLIENT_PASSWORD;
 
-
+    @Value("${rabbitmq.port}")
     private static int PORT = 61613;
 
     /**
