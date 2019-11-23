@@ -75,7 +75,7 @@ public class Config {
     public ConnectionFactory connectionFactory() {
         final URI rabbitMqUrl;
         try {
-            rabbitMqUrl = new URI(System.getenv(HOST));
+            rabbitMqUrl = new URI(HOST);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
