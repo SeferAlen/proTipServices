@@ -23,6 +23,9 @@ public class Config {
     @Value("${rabbitmq.url}")
     private String HOST;
 
+    @Value("${rabbitmq.vhost}")
+    private String VHOST;
+
     @Value("${rabbitmq.user}")
     private String CLIENT_LOGIN;
 
@@ -88,7 +91,7 @@ public class Config {
         factory.setPassword(CLIENT_PASSWORD);
         factory.setHost(HOST);
         factory.setPort(PORT);
-        factory.setVirtualHost("/");
+        factory.setVirtualHost(VHOST);
 
         return factory;
     }
