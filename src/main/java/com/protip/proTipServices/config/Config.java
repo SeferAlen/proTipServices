@@ -85,13 +85,20 @@ public class Config {
 
     @Bean
     public ConnectionFactory connectionFactory() {
+        final URI rabbitMqUrl;
+        try {
+            rabbitMqUrl = new URI(System.getenv("CLOUDAMQP_URL"));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
         final CachingConnectionFactory factory = new CachingConnectionFactory();
 
-        factory.setUsername(CLIENT_LOGIN);
-        factory.setPassword(CLIENT_PASSWORD);
-        factory.setHost(HOST);
-        factory.setPort(PORT);
-        factory.setVirtualHost(VHOST);
+        factory.setUsername(rabbitMqUrl.getUserInfo().split(":")[0]);
+        factory.setPassword(rabbitMqUrl.getUserInfo().split(":")[1]);
+        factory.setHost(rabbitMqUrl.getHost());
+        factory.setPort(rabbitMqUrl.getPort());
+        factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
 
         return factory;
     }
