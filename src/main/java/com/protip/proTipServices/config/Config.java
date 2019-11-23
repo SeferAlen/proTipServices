@@ -20,9 +20,6 @@ public class Config {
     private static final String CHAT_QUEUE = "proTipServicesQueueChat";
     private static final String NOTIFICATION_QUEUE = "proTipServicesQueueNotification";
 
-    @Value("${rabbitmq.url}")
-    private String HOST;
-
     /**
      * Bean for PasswordEncoder
      *
@@ -75,7 +72,7 @@ public class Config {
     public ConnectionFactory connectionFactory() {
         final URI rabbitMqUrl;
         try {
-            rabbitMqUrl = new URI(System.getenv(HOST));
+            rabbitMqUrl = new URI(System.getenv("CLOUDAMQP_URL"));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
