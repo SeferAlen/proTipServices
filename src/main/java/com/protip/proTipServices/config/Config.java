@@ -23,18 +23,6 @@ public class Config {
     @Value("${rabbitmq.url}")
     private String HOST;
 
-    @Value("${rabbitmq.vhost}")
-    private String VHOST;
-
-    @Value("${rabbitmq.user}")
-    private String CLIENT_LOGIN;
-
-    @Value("${rabbitmq.password}")
-    private String CLIENT_PASSWORD;
-
-    @Value("${rabbitmq.port}")
-    private int PORT;
-
     /**
      * Bean for PasswordEncoder
      *
@@ -87,7 +75,7 @@ public class Config {
     public ConnectionFactory connectionFactory() {
         final URI rabbitMqUrl;
         try {
-            rabbitMqUrl = new URI(System.getenv("CLOUDAMQP_URL"));
+            rabbitMqUrl = new URI(System.getenv(HOST));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
