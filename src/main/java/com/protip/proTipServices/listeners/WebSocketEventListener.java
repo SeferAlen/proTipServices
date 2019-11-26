@@ -16,36 +16,36 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
  */
 @Component
 public class WebSocketEventListener {
-    private static final String NEW_CONNECTION = "Received a new web socket connection";
-    private static final String USERNAME = "username";
-    private final Logger logger = LoggerFactory.getLogger(msgController.class);
-
-    @Autowired
-    private SimpMessageSendingOperations messagingTemplate;
-
-    /**
-     * Method for handling new web socket connection
-     *
-     */
-    @EventListener
-    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        logger.info(NEW_CONNECTION);
-    }
-
-    /**
-     * Method for handling web socket disconnect
-     *
-     */
-    @EventListener
-    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        final StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        final String username = (String) headerAccessor.getSessionAttributes().get(USERNAME);
-
-        if (username != null) {
-            //Message chatMessage = new Message();
-            //chatMessage.setMessageType(MessageType.MESSAGE);
-            //chatMessage.setSender(username);
-            //messagingTemplate.convertAndSend("/topic/public", chatMessage);
-        }
-    }
+//    private static final String NEW_CONNECTION = "Received a new web socket connection";
+//    private static final String USERNAME = "username";
+//    private final Logger logger = LoggerFactory.getLogger(msgController.class);
+//
+//    @Autowired
+//    private SimpMessageSendingOperations messagingTemplate;
+//
+//    /**
+//     * Method for handling new web socket connection
+//     *
+//     */
+//    @EventListener
+//    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
+//        logger.info(NEW_CONNECTION);
+//    }
+//
+//    /**
+//     * Method for handling web socket disconnect
+//     *
+//     */
+//    @EventListener
+//    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
+//        final StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+//        final String username = (String) headerAccessor.getSessionAttributes().get(USERNAME);
+//
+//        if (username != null) {
+//            //Message chatMessage = new Message();
+//            //chatMessage.setMessageType(MessageType.MESSAGE);
+//            //chatMessage.setSender(username);
+//            //messagingTemplate.convertAndSend("/topic/public", chatMessage);
+//        }
+//    }
 }

@@ -1,5 +1,6 @@
 package com.protip.proTipServices.service;
 
+import antlr.debug.MessageListener;
 import com.protip.proTipServices.api.msgController;
 import com.protip.proTipServices.config.Config;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
@@ -98,20 +99,20 @@ public class MessageServiceImpl implements MessageService {
         if (userStatus == ADMIN) {
             saveMessage(receivedMessage, messageType, proTipUser);
             if (messageType.getName() == NOTIFICATION) {
-                rabbitMQNotification(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
+                // rabbitMQNotification(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
             } else {
-                rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
+                // rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
             }
             return OK;
         } else {
             if (userStatus == OK) {
                 saveMessage(receivedMessage, messageType, proTipUser);
-                rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
+                // rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
 
                 return OK;
             } else if (userStatus == OK_WITH_NEW_TOKEN) {
                 saveMessage(receivedMessage, messageType, proTipUser);
-                rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
+                // rabbitMQMessage(proTipUser.getFirstName() + EMPTY_SPACE + proTipUser.getLastName() + DOUBLE_DOT + receivedMessage.getMessage());
 
                 return OK_WITH_NEW_TOKEN;
             } else if (userStatus == EXPIRED) {
@@ -224,23 +225,23 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.save(new Message(user, message.getMessage(), new Date(), type));
     }
 
-    /**
-     * Method for handling rabbitMQ messaging
-     */
-    private void rabbitMQMessage(final String message) {
-        // TODO: Work in progress
-
-        //template.convertAndSend("/topic/javainuse", message);
-        rabbitTemplate.convertAndSend(Config.getChatQueue(), message);
-    }
-
-    /**
-     * Method for handling rabbitMQ notifications
-     */
-    private void rabbitMQNotification(final String message) {
-        // TODO: Work in progress
-
-        //template.convertAndSend("/topic/javainuse", message);
-        rabbitTemplate.convertAndSend(Config.getNotificationQueueQueue(), message);
-    }
+//    /**
+//     * Method for handling rabbitMQ messaging
+//     */
+//    private void rabbitMQMessage(final String message) {
+//        // TODO: Work in progress
+//
+//        //template.convertAndSend("/topic/javainuse", message);
+//        rabbitTemplate.convertAndSend(Config.getChatQueue(), message);
+//    }
+//
+//    /**
+//     * Method for handling rabbitMQ notifications
+//     */
+//    private void rabbitMQNotification(final String message) {
+//        // TODO: Work in progress
+//
+//        //template.convertAndSend("/topic/javainuse", message);
+//        rabbitTemplate.convertAndSend(Config.getNotificationQueueQueue(), message);
+//    }
 }

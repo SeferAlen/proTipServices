@@ -68,23 +68,23 @@ public class Config {
         return NOTIFICATION_QUEUE;
     }
 
-    @Bean
-    public ConnectionFactory connectionFactory() {
-        final URI rabbitMqUrl;
-        try {
-            rabbitMqUrl = new URI(System.getenv("CLOUDAMQP_URL"));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        final CachingConnectionFactory factory = new CachingConnectionFactory();
-
-        factory.setUsername(rabbitMqUrl.getUserInfo().split(":")[0]);
-        factory.setPassword(rabbitMqUrl.getUserInfo().split(":")[1]);
-        factory.setHost(rabbitMqUrl.getHost());
-        factory.setPort(rabbitMqUrl.getPort());
-        factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
-
-        return factory;
-    }
+//    @Bean
+//    public ConnectionFactory connectionFactory() {
+//        final URI rabbitMqUrl;
+//        try {
+//            rabbitMqUrl = new URI(System.getenv("CLOUDAMQP_URL"));
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        final CachingConnectionFactory factory = new CachingConnectionFactory();
+//
+//        factory.setUsername(rabbitMqUrl.getUserInfo().split(":")[0]);
+//        factory.setPassword(rabbitMqUrl.getUserInfo().split(":")[1]);
+//        factory.setHost(rabbitMqUrl.getHost());
+//        factory.setPort(rabbitMqUrl.getPort());
+//        factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
+//
+//        return factory;
+//    }
 }
