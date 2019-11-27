@@ -100,7 +100,7 @@ public class testController extends basicController {
 
         try {
             AblyRest ably = new AblyRest("FUaNVQ.FJ2IJg:TTCVnPEOURwpPLe_");
-            Channel channel = ably.channels.get("test");
+            Channel channel = ably.channels.get("proTipChannel");
             channel.publish("event", message.getMessage());
         } catch (AblyException e) {
         }
