@@ -1,17 +1,21 @@
 package com.protip.proTipServices.config;
 
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Class for app configuration
  */
 @Configuration
-@EnableScheduling
 public class Config {
     private static final String CHAT_QUEUE = "proTipServicesQueueChat";
     private static final String NOTIFICATION_QUEUE = "proTipServicesQueueNotification";
@@ -63,4 +67,24 @@ public class Config {
     public static String getNotificationQueueQueue() {
         return NOTIFICATION_QUEUE;
     }
+
+//    @Bean
+//    public ConnectionFactory connectionFactory() {
+//        final URI rabbitMqUrl;
+//        try {
+//            rabbitMqUrl = new URI(System.getenv("CLOUDAMQP_URL"));
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        final CachingConnectionFactory factory = new CachingConnectionFactory();
+//
+//        factory.setUsername(rabbitMqUrl.getUserInfo().split(":")[0]);
+//        factory.setPassword(rabbitMqUrl.getUserInfo().split(":")[1]);
+//        factory.setHost(rabbitMqUrl.getHost());
+//        factory.setPort(rabbitMqUrl.getPort());
+//        factory.setVirtualHost(rabbitMqUrl.getPath().substring(1));
+//
+//        return factory;
+//    }
 }

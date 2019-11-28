@@ -4,13 +4,17 @@ import com.protip.proTipServices.config.Config;
 import com.protip.proTipServices.exceptions.GenericProTipServiceException;
 import com.protip.proTipServices.exceptions.TokenExpiredException;
 import com.protip.proTipServices.model.Message;
+import com.protip.proTipServices.model.ReceivedMessage;
 import com.protip.proTipServices.model.TokenSet;
 import com.protip.proTipServices.repository.MessageTypeRepository;
 import com.protip.proTipServices.service.AuthenticationService;
 import com.protip.proTipServices.service.AuthorizationService;
+import io.ably.lib.realtime.AblyRealtime;
+import io.ably.lib.rest.Channel;
+import io.ably.lib.rest.AblyRest;
+import io.ably.lib.types.AblyException;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,8 +42,6 @@ public class testController extends basicController {
     private AuthorizationService authorizationService;
     @Autowired
     MessageTypeRepository messageTypeRepository;
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
 
     /**
      * Test user authorization endpoint
@@ -94,13 +96,15 @@ public class testController extends basicController {
      * @return {@link ResponseEntity} the response entity with body containing messages and Http status
      */
     @PostMapping(value = "sendMessage")
-    public ResponseEntity<?> testAdminAuthorization(@RequestBody final Message message) {
+    public ResponseEntity<?> testAdminAuthorization(@RequestBody final ReceivedMessage message) {
 
-        if(message.getSender().equals(TEST_SENDER)) {
-            rabbitTemplate.convertAndSend(Config.getNotificationQueueQueue(), message.getMessage());
-        } else {
-            rabbitTemplate.convertAndSend(Config.getChatQueue(), message.getMessage());
+        try {
+            AblyRest ably = new AblyRest("FUaNVQ.FJ2IJg:TTCVnPEOURwpPLe_");
+            Channel channel = ably.channels.get("proTipChannel");
+            channel.publish("event", message.getMessage());
+        } catch (AblyException e) {
         }
+
 
         return response(message, HTTP_OK);
     }

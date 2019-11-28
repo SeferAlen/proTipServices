@@ -16,35 +16,37 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class stompController extends basicController {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+    // TODO: Currently rabbitMQ messaging is not being used
 
-    /**
-     * Receive message endpoint for receiving messages from stomp client
-     *
-     * @param message {@link Message} the message
-     * @return {@link ResponseEntity} the response entity with body containing token and Http status
-     */
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/javainuse")
-    public ResponseEntity<?> sendMessage(@Payload final Message message) {
-        return response(message, HTTP_OK);
-    }
-
-    /**
-     * Receive message endpoint for receiving messages from stomp client
-     *
-     * @param message        {@link Message}                   the message
-     * @param headerAccessor {@link SimpMessageHeaderAccessor} the headerAccessor
-     * @return {@link ResponseEntity} the response entity with body containing token and Http status
-     */
-    @MessageMapping("/chat.newUser")
-    @SendTo("/topic/javainuse")
-    public ResponseEntity<?> newUser(@Payload final Message message, final SimpMessageHeaderAccessor headerAccessor) {
-        // TODO: Work in progress
-        //message.setMessageType(MessageType.MESSAGE);
-        //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
-        //headerAccessor.getSessionAttributes().put("username", message);
-        return response(message, HTTP_OK);
-    }
+//    @Autowired
+//    private RabbitTemplate rabbitTemplate;
+//
+//    /**
+//     * Receive message endpoint for receiving messages from stomp client
+//     *
+//     * @param message {@link Message} the message
+//     * @return {@link ResponseEntity} the response entity with body containing token and Http status
+//     */
+//    @MessageMapping("/chat.sendMessage")
+//    @SendTo("/topic/javainuse")
+//    public ResponseEntity<?> sendMessage(@Payload final Message message) {
+//        return response(message, HTTP_OK);
+//    }
+//
+//    /**
+//     * Receive message endpoint for receiving messages from stomp client
+//     *
+//     * @param message        {@link Message}                   the message
+//     * @param headerAccessor {@link SimpMessageHeaderAccessor} the headerAccessor
+//     * @return {@link ResponseEntity} the response entity with body containing token and Http status
+//     */
+//    @MessageMapping("/chat.newUser")
+//    @SendTo("/topic/javainuse")
+//    public ResponseEntity<?> newUser(@Payload final Message message, final SimpMessageHeaderAccessor headerAccessor) {
+//
+//        //message.setMessageType(MessageType.MESSAGE);
+//        //rabbitTemplate.convertAndSend("proTipServicesQueueChat", message.getMessage());
+//        //headerAccessor.getSessionAttributes().put("username", message);
+//        return response(message, HTTP_OK);
+//    }
 }
